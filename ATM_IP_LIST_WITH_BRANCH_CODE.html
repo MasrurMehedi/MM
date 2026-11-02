@@ -1,50 +1,2401 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ATM / Gateway / DVR IP Monitoring List</title>
-<style>
-:root{--bg:#f5f7fb;--card:#fff;--ink:#172033;--muted:#667085;--line:#e5e9f0;--accent:#155eef}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);font:14px/1.45 Arial,sans-serif;color:var(--ink)}
-header{background:#102a43;color:white;padding:22px 24px}header h1{margin:0 0 5px;font-size:22px}header p{margin:0;color:#d8e4f0}
-main{padding:20px;max-width:1500px;margin:auto}.notice{background:#fff8e6;border:1px solid #f2d38a;border-radius:9px;padding:12px 14px;margin-bottom:16px}
-.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}input{padding:10px 12px;border:1px solid #cfd6e4;border-radius:8px;min-width:260px;flex:1}
-.count{color:var(--muted);align-self:center}.tablewrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:10px}
-table{border-collapse:collapse;width:100%;min-width:1100px}th,td{padding:10px 11px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
-th{background:#edf2f8;position:sticky;top:0;z-index:1}tr:hover td{background:#f8fbff}
-button{background:var(--accent);color:white;border:0;border-radius:7px;padding:8px 10px;cursor:pointer;font-weight:600}button.secondary{background:#475467}button:hover{opacity:.9}
-.ip{font-family:Consolas,monospace}.small{font-size:12px;color:var(--muted)}footer{padding:18px;color:var(--muted)}
-</style></head>
+<meta charset="UTF-8">
+<title>IP List</title>
+</head>
 <body>
-<header><h1>ATM / Gateway / DVR IP Monitoring List</h1><p>Search terminals, view network addresses and generate a local Windows ping batch file.</p></header>
-<main>
-<div class="notice"><b>Important – browser limitation:</b> GitHub Pages and htmlpreview.io cannot run Windows CMD or send ICMP ping packets from the browser. Use the “Download 3-IP PING BAT” button, then run the downloaded .bat file on a Windows computer connected to your bank network. It opens three CMD windows, one for Gateway, one for ATM IP and one for DVR IP. Press Ctrl+C in each window to stop.</div>
-<div class="toolbar"><input id="search" placeholder="Search ATM No, ATM name, branch code or IP…"><span class="count" id="count"></span></div>
-<div class="tablewrap"><table><thead><tr>
-<th>ATM No</th><th>ATM Name</th><th>Branch Code</th><th>Gateway</th><th>ATM IP</th><th>DVR IP</th><th>Machine Type</th><th>Booth Type</th><th>Link Provider</th><th>Live Date</th><th>Ping Tool</th>
-</tr></thead><tbody id="body"></tbody></table></div>
-<footer>Source: uploaded Excel workbook. Branch codes are retained with leading zeros. IP monitoring is performed locally by Windows, not by this webpage.</footer>
-</main>
-<script>
-const data=[{"ATM No": "FShobA01", "ATM Name": "Head Office NCR Onsite ATM", "Br. Code": "0100", "Gateway": "10.100.117.177", "ATM IP": "10.100.117.178", "DVR IP": "10.100.117.182", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Square", "Live Date": "2012-11-08"}, {"ATM No": "FSbahA04", "ATM Name": "Bahaddarhat NCR Offsite ATM", "Br. Code": "0123", "Gateway": "10.100.116.25", "ATM IP": "10.100.116.26", "DVR IP": "10.100.116.30", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "onsite", "Link Provider": "BDCOM", "Live Date": "2012-04-09"}, {"ATM No": "FSandA05", "ATM Name": "Anderkillah NCR Onsite ATM", "Br. Code": "0134", "Gateway": "10.100.116.17", "ATM IP": "10.100.116.18", "DVR IP": "10.100.116.22", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "2012-05-09"}, {"ATM No": "FSjesA06", "ATM Name": "Jessore NCR Offsite ATM", "Br. Code": "0141", "Gateway": "10.100.116.33", "ATM IP": "10.100.116.34", "DVR IP": "10.100.116.38", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "onsite", "Link Provider": "HRC", "Live Date": "19-09-12"}, {"ATM No": "FSbanA07", "ATM Name": "Bandar Tila NCR Offsite ATM", "Br. Code": "0184", "Gateway": "10.100.118.9", "ATM IP": "10.100.118.10", "DVR IP": "10.100.118.14", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "HRC", "Live Date": "2012-03-10"}, {"ATM No": "FSmouA09", "ATM Name": "Moulovibazar NCR Onsite ATM", "Br. Code": "0122", "Gateway": "10.100.116.57", "ATM IP": "10.100.116.58", "DVR IP": "10.100.116.62", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Access Tel", "Live Date": "17-10-12"}, {"ATM No": "FSmohA13", "ATM Name": "Mohra NCR Onsite ATM", "Br. Code": "0161", "Gateway": "10.100.116.81", "ATM IP": "10.100.116.82", "DVR IP": "10.100.116.86", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "2012-05-11"}, {"ATM No": "FStalA14", "ATM Name": "Taltola NCR offsite ATM", "Br. Code": "0153", "Gateway": "10.100.118.17", "ATM IP": "10.100.118.18", "DVR IP": "10.100.118.22", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "BDCOM", "Live Date": "2012-07-11"}, {"ATM No": "", "ATM Name": "", "Br. Code": "", "Gateway": "", "ATM IP": "", "DVR IP": "", "PING STATUS (GW + ATM + DVR)": "", "Machine Type": "", "Booth Type": "", "Link Provider": "", "Live Date": ""}, {"ATM No": "FSdonA17", "ATM Name": "Donia NCR Onsite ATM", "Br. Code": "0121", "Gateway": "10.100.116.113", "ATM IP": "10.100.116.114", "DVR IP": "10.100.116.118", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "14-11-12"}, {"ATM No": "FSjsrA21", "ATM Name": "Jessore (Rotary) NCR Offsite ATM", "Br. Code": "0141", "Gateway": "10.100.118.57", "ATM IP": "10.100.118.58", "DVR IP": "10.100.118.62", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "Access Tel", "Live Date": "2012-11-12"}, {"ATM No": "FSdhnA22", "ATM Name": "Dhanmondi NCR Onsite ATM", "Br. Code": "0108", "Gateway": "10.100.116.145", "ATM IP": "10.100.116.146", "DVR IP": "10.100.116.150", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BDCOM", "Live Date": "2012-11-12"}, {"ATM No": "FSmadA23", "ATM Name": "Madhabdi NCR Onsite ATM", "Br. Code": "0154", "Gateway": "10.100.116.137", "ATM IP": "10.100.116.138", "DVR IP": "10.100.116.142", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "HRC", "Live Date": "2012-12-12"}, {"ATM No": "FSjesA25", "ATM Name": "Jessore (Pallbari) NCR Offsite ATM", "Br. Code": "0141", "Gateway": "10.100.118.65", "ATM IP": "10.100.118.66", "DVR IP": "10.100.118.70", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "Access Tel", "Live Date": "2012-12-12"}, {"ATM No": "FSazaA26", "ATM Name": "Azampur NCR Offsite ATM", "Br. Code": "0140", "Gateway": "10.100.118.33", "ATM IP": "10.100.118.34", "DVR IP": "10.100.118.38", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "Access Tel", "Live Date": "17-12-12"}, {"ATM No": "FSnarA27", "ATM Name": "Narail Lohagara NCR Offsite ATM", "Br. Code": "0157", "Gateway": "10.100.118.41", "ATM IP": "10.100.118.42", "DVR IP": "10.100.118.46", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "SQURE", "Live Date": "19-12-12"}, {"ATM No": "FSbasA29", "ATM Name": "Bashundhara NCR Onsite ATM", "Br. Code": "0177", "Gateway": "10.100.116.129", "ATM IP": "10.100.116.130", "DVR IP": "10.100.116.134", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "24-12-12"}, {"ATM No": "FSuttA30", "ATM Name": "Uttara NCR Onsite ATM", "Br. Code": "0158", "Gateway": "10.100.116.161", "ATM IP": "10.100.116.162", "DVR IP": "10.100.116.166", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Access Tel", "Live Date": "26-12-12"}, {"ATM No": "FSkumA35", "ATM Name": "Kumira NCR Onsite ATM", "Br. Code": "0193", "Gateway": "10.100.116.177", "ATM IP": "10.100.116.178", "DVR IP": "10.100.116.182", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "HRC", "Live Date": "2013-12-06"}, {"ATM No": "FSbisA38", "ATM Name": "Biswanath NCR Onsite ATM", "Br. Code": "0105", "Gateway": "10.100.116.193", "ATM IP": "10.100.116.194", "DVR IP": "10.100.116.198", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "17-06-13"}, {"ATM No": "FSsatA39", "ATM Name": "Satkhira Offsite NCR ATM", "Br. Code": "0146", "Gateway": "10.100.118.105", "ATM IP": "10.100.118.106", "DVR IP": "10.100.118.110", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "BDCOM", "Live Date": "26-06-13"}, {"ATM No": "FScrtA41", "ATM Name": "Court Bazar NCR Onsite ATM", "Br. Code": "0135", "Gateway": "10.100.116.217", "ATM IP": "10.100.116.218", "DVR IP": "10.100.116.222", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Bracknet", "Live Date": "2013-03-07"}, {"ATM No": "FSranA44", "ATM Name": "Ranir Hat NCR Offsite ATM", "Br. Code": "0156", "Gateway": "10.100.130.137", "ATM IP": "10.100.130.138", "DVR IP": "10.100.130.142", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "SQURE", "Live Date": "2013-10-07"}, {"ATM No": "FSkesA46", "ATM Name": "Keshabpur NCR Onsite ATM", "Br. Code": "0188", "Gateway": "10.100.116.241", "ATM IP": "10.100.116.242", "DVR IP": "10.100.116.246", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Accesstel", "Live Date": "16-09-13"}, {"ATM No": "FSramA49", "ATM Name": "Ramgonj NCR Onsite ATM", "Br. Code": "0131", "Gateway": "10.100.117.201", "ATM IP": "10.100.117.202", "DVR IP": "10.100.117.206", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BDCOM", "Live Date": "24-09-13"}, {"ATM No": "FSpahA51", "ATM Name": "Pahartoli Chowmohoni NCR offsite ATM", "Br. Code": "0196", "Gateway": "10.100.118.145", "ATM IP": "10.100.118.146", "DVR IP": "10.100.118.150", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "LINK 3", "Live Date": "2013-07-11"}, {"ATM No": "FSagrA52", "ATM Name": "Agrabad NCR Onsite ATM", "Br. Code": "0104", "Gateway": "10.100.117.73", "ATM IP": "10.100.117.74", "DVR IP": "10.100.117.78", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "2013-04-11"}, {"ATM No": "FSsylA53", "ATM Name": "Sylhet NCR Onsite ATM", "Br. Code": "0111", "Gateway": "10.100.117.9", "ATM IP": "10.100.117.10", "DVR IP": "10.100.117.14", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BDCOM", "Live Date": "2013-11-11"}, {"ATM No": "FSmymA54", "ATM Name": "Mymensingh NCR Onsite ATM", "Br. Code": "0160", "Gateway": "10.100.117.49", "ATM IP": "10.100.117.50", "DVR IP": "10.100.117.54", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "2013-12-11"}, {"ATM No": "FSambA55", "ATM Name": "Amborkhana NCR Offsite ATM", "Br. Code": "0128", "Gateway": "10.100.118.169", "ATM IP": "10.100.118.170", "DVR IP": "10.100.118.174", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "LINK 3", "Live Date": "16-01-14"}, {"ATM No": "FSbgsA57", "ATM Name": "Bangshal NCR Onsite ATM", "Br. Code": "0106", "Gateway": "10.100.117.65", "ATM IP": "10.100.117.66", "DVR IP": "10.100.117.70", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "16-01-14"}, {"ATM No": "FSmoiA59", "ATM Name": "Khulna Moilapota NCR Offsite ATM", "Br. Code": "0116", "Gateway": "10.100.118.185", "ATM IP": "10.100.118.186", "DVR IP": "10.100.118.190", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "Access Tel", "Live Date": "30-01-14"}, {"ATM No": "FSjheA60", "ATM Name": "Jhenaidah NCR Offsite ATM", "Br. Code": "0197", "Gateway": "10.100.118.193", "ATM IP": "10.100.118.194", "DVR IP": "10.100.118.198", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "Access Tel", "Live Date": "13-02-14"}, {"ATM No": "FSposA74", "ATM Name": "Postagola NCR Onsite ATM", "Br. Code": "0225", "Gateway": "10.100.117.193", "ATM IP": "10.100.117.194", "DVR IP": "10.100.117.198", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "GETCO", "Live Date": "13-07-14"}, {"ATM No": "FSsamA77", "ATM Name": "Hotel Amari NCR Offsite ATM", "Br. Code": "0112", "Gateway": "10.100.118.241", "ATM IP": "10.100.118.242", "DVR IP": "10.100.118.246", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "Access Tel", "Live Date": "31-08-14"}, {"ATM No": "FStopA80", "ATM Name": "Topkhana NCR Onsite ATM", "Br. Code": "0118", "Gateway": "10.100.119.1", "ATM IP": "10.100.119.2", "DVR IP": "10.100.119.6", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BDCOM", "Live Date": "25-11-14"}, {"ATM No": "FSrupA81", "ATM Name": "Rupnagar NCR Offsite ATM", "Br. Code": "0223", "Gateway": "10.100.119.9", "ATM IP": "10.100.119.10", "DVR IP": "10.100.119.14", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "L3", "Live Date": "2015-01-04"}, {"ATM No": "FSmasA85", "ATM Name": "Masterbari NCR Offsite ATM", "Br. Code": "0183", "Gateway": "10.100.117.121", "ATM IP": "10.100.117.122", "DVR IP": "10.100.117.126", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "L3/GETCO", "Live Date": "2015-08-04"}, {"ATM No": "FSkzpA92", "ATM Name": "Kazipara NCR Offsite ATM", "Br. Code": "0113", "Gateway": "10.100.119.73", "ATM IP": "10.100.119.74", "DVR IP": "10.100.119.78", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "SQURE", "Live Date": "2015-11-05"}, {"ATM No": "FSrbgA93", "ATM Name": "Botanical Garden NCR offsite ATM", "Br. Code": "0223", "Gateway": "10.100.119.81", "ATM IP": "10.100.119.82", "DVR IP": "10.100.119.86", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "HRC", "Live Date": "13-05-15"}, {"ATM No": "FSbogA96", "ATM Name": "Bogra NCR Offsite ATM", "Br. Code": "0130", "Gateway": "10.100.119.113", "ATM IP": "10.100.119.114", "DVR IP": "10.100.119.118", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "HRC", "Live Date": "2015-02-07"}, {"ATM No": "FSknpA97", "ATM Name": "Konapara NCR Offsite ATM", "Br. Code": "0190", "Gateway": "10.100.119.121", "ATM IP": "10.100.119.122", "DVR IP": "10.100.119.126", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "Access Tel", "Live Date": "2015-12-07"}, {"ATM No": "FSzrbA98", "ATM Name": "Zirabo Pukurpar NCR Offsite ATM", "Br. Code": "0148", "Gateway": "10.100.119.129", "ATM IP": "10.100.119.130", "DVR IP": "10.100.119.134", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "HRC", "Live Date": "13-07-15"}, {"ATM No": "FSbisA100", "ATM Name": "Biswaroad NCR Offsite ATM", "Br. Code": "0120", "Gateway": "10.100.119.137", "ATM IP": "10.100.119.138", "DVR IP": "10.100.119.142", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "HRC", "Live Date": "26-08-15"}, {"ATM No": "FSjubA101", "ATM Name": "Jubilee Road NCR Onsite ATM", "Br. Code": "0107", "Gateway": "10.100.117.145", "ATM IP": "10.100.117.146", "DVR IP": "10.100.117.150", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "BDCOM", "Live Date": "2015-01-09"}, {"ATM No": "FSbrbA102", "ATM Name": "Barobazar NCR Onsite ATM", "Br. Code": "0211", "Gateway": "10.100.117.153", "ATM IP": "10.100.117.154", "DVR IP": "10.100.117.158", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3/GETCO", "Live Date": "2015-06-10"}, {"ATM No": "FSdpbA103", "ATM Name": "Dhupoil Bazar NCR Onsite ATM", "Br. Code": "0217", "Gateway": "10.100.119.145", "ATM IP": "10.100.119.146", "DVR IP": "10.100.119.150", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "SQURE", "Live Date": "2015-05-10"}, {"ATM No": "FSkapA106", "ATM Name": "Kapilmuni NCR Offsite ATM", "Br. Code": "0208", "Gateway": "10.100.119.169", "ATM IP": "10.100.119.170", "DVR IP": "10.100.119.174", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "PCL(NOC)", "Live Date": "2016-12-01"}, {"ATM No": "FSklgA108", "ATM Name": "Kaligonj NCR Offsite ATM", "Br. Code": "0224", "Gateway": "10.100.119.185", "ATM IP": "10.100.119.186", "DVR IP": "10.100.119.190", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "BDCOM", "Live Date": "27-01-16"}, {"ATM No": "FSgobA109", "ATM Name": "Gobindagonj NCR Offsite ATM", "Br. Code": "0132", "Gateway": "10.100.119.193", "ATM IP": "10.100.119.194", "DVR IP": "10.100.119.198", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "L3", "Live Date": "16-02-16"}, {"ATM No": "FSchwA114", "ATM Name": "Chowdhury Hat NCR Offsite ATM", "Br. Code": "0244", "Gateway": "10.100.119.217", "ATM IP": "10.100.119.218", "DVR IP": "10.100.119.222", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "Access Tel", "Live Date": "30-06-16"}, {"ATM No": "FSdkrA115", "ATM Name": "Dhorkora Bazar NCR Offsite ATM", "Br. Code": "0246", "Gateway": "10.100.119.233", "ATM IP": "10.100.119.234", "DVR IP": "10.100.119.238", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "Access Tel", "Live Date": "29-06-16"}, {"ATM No": "FSmotA116", "ATM Name": "Motijheel NCR Onsite ATM", "Br. Code": "0129", "Gateway": "10.100.117.161", "ATM IP": "10.100.117.162", "DVR IP": "10.100.117.166", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BDCOM", "Live Date": "29-06-16"}, {"ATM No": "FSgalA119", "ATM Name": "Galachipa NCR Offsite ATM", "Br. Code": "0194", "Gateway": "10.100.119.225", "ATM IP": "10.100.119.226", "DVR IP": "10.100.119.230", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "Access Tel", "Live Date": "2016-02-08"}, {"ATM No": "FScnpA121", "ATM Name": "Chandpur NCR Offsite ATM", "Br. Code": "0241", "Gateway": "10.100.130.9", "ATM IP": "10.100.130.10", "DVR IP": "10.100.130.14", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "link 3", "Live Date": "2016-03-10"}, {"ATM No": "FSmirA122", "ATM Name": "Mirpur Circle-1 NCR Offsite ATM", "Br. Code": "0113", "Gateway": "10.100.130.17", "ATM IP": "10.100.130.18", "DVR IP": "10.100.130.22", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "BDCOM", "Live Date": "17-10-16"}, {"ATM No": "FSkirA123", "ATM Name": "Khulna Sir Iqbal Road NCR offsite ATM", "Br. Code": "0116", "Gateway": "10.100.130.25", "ATM IP": "10.100.130.26", "DVR IP": "10.100.130.30", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "BDCOM", "Live Date": "29-11-16"}, {"ATM No": "FSankA126", "ATM Name": "Anderkillah Press Club NCR Offsite ATM", "Br. Code": "0134", "Gateway": "10.100.130.49", "ATM IP": "10.100.130.50", "DVR IP": "10.100.130.54", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "GETCO", "Live Date": "28-03-17"}, {"ATM No": "FSsavA127", "ATM Name": "Savar NCR Offsite ATM", "Br. Code": "0149", "Gateway": "10.100.130.57", "ATM IP": "10.100.130.58", "DVR IP": "10.100.130.62", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "L3", "Live Date": "2017-09-05"}, {"ATM No": "FSmohA128", "ATM Name": "Mohammadpur NCR Offsite ATM", "Br. Code": "0186", "Gateway": "10.100.130.65", "ATM IP": "10.100.130.66", "DVR IP": "10.100.130.70", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "L3", "Live Date": "18-09-17"}, {"ATM No": "FSrbgA130", "ATM Name": "Rayerbazar NCR Offsite ATM", "Br. Code": "0245", "Gateway": "10.100.130.81", "ATM IP": "10.100.130.82", "DVR IP": "10.100.130.86", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "PCL", "Live Date": "2018-11-01"}, {"ATM No": "FShomA131", "ATM Name": "Homna NCR Onsite ATM", "Br. Code": "0257", "Gateway": "10.100.130.89", "ATM IP": "10.100.130.90", "DVR IP": "10.100.130.94", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "PCL", "Live Date": "24-01-18"}, {"ATM No": "FSsydA132", "ATM Name": "Sayedpur NCR Offsite ATM", "Br. Code": "0252", "Gateway": "10.100.130.97", "ATM IP": "10.100.130.98", "DVR IP": "10.100.130.102", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "L3", "Live Date": "2018-07-02"}, {"ATM No": "FSthkA133", "ATM Name": "Thakurgaon NCR Offsite ATM", "Br. Code": "0261", "Gateway": "10.100.130.105", "ATM IP": "10.100.130.106", "DVR IP": "10.100.130.110", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "L3", "Live Date": "2018-09-05"}, {"ATM No": "FScoxA134", "ATM Name": "Cox's Bazar 2nd NCR Offsite ATM", "Br. Code": "0139", "Gateway": "10.100.130.113", "ATM IP": "10.100.130.114", "DVR IP": "10.100.130.118", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "L3", "Live Date": "14-05-18"}, {"ATM No": "FSdokA135", "ATM Name": "Dokkhin Khan NCR Offsite ATM", "Br. Code": "0237", "Gateway": "10.100.130.121", "ATM IP": "10.100.130.122.", "DVR IP": "10.100.130.126", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "GETCO", "Live Date": "23-07-18"}, {"ATM No": "FSchkA137", "ATM Name": "Chakaria NCR onsite ATM", "Br. Code": "0142", "Gateway": "10.100.130.177", "ATM IP": "10.100.130.178", "DVR IP": "10.100.130.182", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "18-09-18"}, {"ATM No": "FSramA138", "ATM Name": "Ramu NCR offsite ATM", "Br. Code": "0200", "Gateway": "10.100.130.185", "ATM IP": "10.100.130.186", "DVR IP": "10.100.130.190", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "Access Tel", "Live Date": "19-09-18"}, {"ATM No": "FSklrA139", "ATM Name": "Kalaroa NCR onsite ATM", "Br. Code": "0266", "Gateway": "10.100.117.225", "ATM IP": "10.100.117.226", "DVR IP": "10.100.117.230", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "bdcom", "Live Date": "24-10-18"}, {"ATM No": "FSmgrA140", "ATM Name": "Magura 2nd NCR Offsite ATM", "Br. Code": "0173", "Gateway": "10.100.130.193", "ATM IP": "10.100.130.194", "DVR IP": "10.100.130.198", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "L3", "Live Date": "2018-07-11"}, {"ATM No": "FSbgbA141", "ATM Name": "Bangadda Bazar NCR Offsite ATM", "Br. Code": "0265", "Gateway": "10.100.130.201", "ATM IP": "10.100.130.202", "DVR IP": "10.100.130.206", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "Circle Network", "Live Date": "2018-05-12"}, {"ATM No": "FSsrgA142", "ATM Name": "Sirajgonj 2nd NCR Offsite ATM", "Br. Code": "0251", "Gateway": "10.100.130.209", "ATM IP": "10.100.130.210", "DVR IP": "10.100.130.214", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "L3", "Live Date": "16-01-19"}, {"ATM No": "FSkalA143", "ATM Name": "Kalia NCR Offsite ATM", "Br. Code": "0269", "Gateway": "10.100.130.217", "ATM IP": "10.100.130.218", "DVR IP": "10.100.130.222", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "bdcom", "Live Date": "21-01-19"}, {"ATM No": "FSkhaA144", "ATM Name": "Khatungonj NCR onsite ATM", "Br. Code": "0102", "Gateway": "10.100.117.233", "ATM IP": "10.100.117.234", "DVR IP": "10.100.117.238", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "HRC", "Live Date": "28-01-19"}, {"ATM No": "FSnalA145", "ATM Name": "Nalta NCR Offsite ATM", "Br. Code": "0272", "Gateway": "10.100.130.225", "ATM IP": "10.100.130.226", "DVR IP": "10.100.130.230", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "l3", "Live Date": "2019-06-02"}, {"ATM No": "FSkurA146", "ATM Name": "Kuril NCR Offsite ATM", "Br. Code": "0260", "Gateway": "10.100.130.233", "ATM IP": "10.100.130.234", "DVR IP": "10.100.130.238", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "bdcom", "Live Date": "2019-04-02"}, {"ATM No": "FShctA147", "ATM Name": "Hotel Cox Today NCR Offsite ATM", "Br. Code": "0139", "Gateway": "10.100.130.241", "ATM IP": "10.100.130.242", "DVR IP": "10.100.130.246", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "L3", "Live Date": "18-02-19"}, {"ATM No": "FSpekA148", "ATM Name": "Pekua NCR Offsite ATM", "Br. Code": "0192", "Gateway": "10.100.147.1", "ATM IP": "10.100.147.2", "DVR IP": "10.100.147.6", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "L3", "Live Date": "16-04-19"}, {"ATM No": "FSpncA149", "ATM Name": "Panchlaish NCR Offsite ATM", "Br. Code": "0236", "Gateway": "10.100.147.9", "ATM IP": "10.100.147.10", "DVR IP": "10.100.147.14", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "L3", "Live Date": "22-05-19"}, {"ATM No": "FSmymA150", "ATM Name": "Mymensingh 2nd NCR Offsite ATM", "Br. Code": "0160", "Gateway": "10.100.147.17", "ATM IP": "10.100.147.18", "DVR IP": "10.100.147.22", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "L3", "Live Date": "2019-03-07"}, {"ATM No": "FSjesA151", "ATM Name": "Jessore (RN Road) NCR Offsite ATM", "Br. Code": "0141", "Gateway": "10.100.147.25", "ATM IP": "10.100.147.26", "DVR IP": "10.100.147.30", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "IOL", "Live Date": "22-07-19"}, {"ATM No": "FSflgA152", "ATM Name": "Fulgazi NCR Offsite ATM", "Br. Code": "0255", "Gateway": "10.100.147.33", "ATM IP": "10.100.147.34", "DVR IP": "10.100.147.38", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "L3", "Live Date": "29-07-19"}, {"ATM No": "FStrbA153", "ATM Name": "Torabganj NCR Onsite ATM", "Br. Code": "0267", "Gateway": "10.100.117.241", "ATM IP": "10.100.117.242", "DVR IP": "10.100.117.246", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "MetroNet/Circle Network", "Live Date": "25-09-19"}, {"ATM No": "FSlskA154", "ATM Name": "Laskarhat NCR Offsite ATM", "Br. Code": "0233", "Gateway": "10.100.147.49", "ATM IP": "10.100.147.50", "DVR IP": "10.100.147.54", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "BDCOM", "Live Date": "16-10-19"}, {"ATM No": "FSpraA155", "ATM Name": "Prabartak Mor NCR Offsite ATM", "Br. Code": "0119", "Gateway": "10.100.147.57", "ATM IP": "10.100.147.58", "DVR IP": "10.100.147.62", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "offsite", "Link Provider": "getco", "Live Date": "30-10-19"}, {"ATM No": "FSshmA156", "ATM Name": "Shimakhali NCR Offsite ATM", "Br. Code": "0220", "Gateway": "10.100.147.41", "ATM IP": "10.100.147.42", "DVR IP": "10.100.147.46", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BDCOM", "Live Date": "2019-02-12"}, {"ATM No": "FSlakA157", "ATM Name": "Lakshmipur NCR offsite ATM", "Br. Code": "0256", "Gateway": "10.100.147.65", "ATM IP": "10.100.147.66", "DVR IP": "10.100.147.70", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "GETCO", "Live Date": "29-01-20"}, {"ATM No": "FSbarA158", "ATM Name": "Baratakia NCR Offsite ATM", "Br. Code": "0263", "Gateway": "10.100.147.73", "ATM IP": "10.100.147.74", "DVR IP": "10.100.147.78", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "PCL", "Live Date": "24-02-20"}, {"ATM No": "FSptkA159", "ATM Name": "Patkelghata NCR Onsite ATM", "Br. Code": "0278", "Gateway": "10.100.147.81", "ATM IP": "10.100.147.82", "DVR IP": "10.100.147.86", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BBTS", "Live Date": "15-03-20"}, {"ATM No": "FSblkA160", "ATM Name": "Bhaluka 2nd NCR Offsite ATM", "Br. Code": "0168", "Gateway": "10.100.147.89", "ATM IP": "10.100.147.90", "DVR IP": "10.100.147.94", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "Accesstel", "Live Date": "2020-11-03"}, {"ATM No": "FSbauA161", "ATM Name": "Bauphal NCR onsite ATM", "Br. Code": "0230", "Gateway": "10.100.147.97", "ATM IP": "10.100.147.98", "DVR IP": "10.100.147.102", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "SQUARE", "Live Date": "23-03-20"}, {"ATM No": "FSjhA162", "ATM Name": "Joypurhat NCR Offsite ATM", "Br. Code": "0264", "Gateway": "10.100.147.105", "ATM IP": "10.100.147.106", "DVR IP": "10.100.147.110", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "L3", "Live Date": "2020-09-09"}, {"ATM No": "FSnaA165", "ATM Name": "Narail Lohagara 2nd NCR Offsite ATM", "Br. Code": "0157", "Gateway": "10.100.147.129", "ATM IP": "10.100.147.130", "DVR IP": "10.100.147.134", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "BBTS", "Live Date": "2020-09-12"}, {"ATM No": "FSmaA166", "ATM Name": "Maniknagar s/b NCR onsite ATM", "Br. Code": "0129", "Gateway": "10.100.147.169", "ATM IP": "10.100.147.170", "DVR IP": "10.100.147.174", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "MetroNet/Circle Network", "Live Date": "27-12-20"}, {"ATM No": "FSprA167", "ATM Name": "Prabartak Mor 2nd NCR Offsite ATM", "Br. Code": "0119", "Gateway": "10.100.147.161", "ATM IP": "10.100.147.162", "DVR IP": "10.100.147.166", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "BBTS", "Live Date": "28-12-20"}, {"ATM No": "FSdoA168", "ATM Name": "Dokkhin Banosree SB138 NCR Onsite ATM", "Br. Code": "0138", "Gateway": "10.100.147.137", "ATM IP": "10.100.147.138", "DVR IP": "10.100.147.142", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "28-12-20"}, {"ATM No": "FSnbA169", "ATM Name": "Naohata Bazar SB NCR Onsite ATM", "Br. Code": "0136", "Gateway": "10.100.147.153", "ATM IP": "10.100.147.154", "DVR IP": "10.100.147.158", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Bracknet", "Live Date": "13-01-21"}, {"ATM No": "FSlnA170", "ATM Name": "Langalbandh Bazar NCR Offsite ATM", "Br. Code": "0268", "Gateway": "10.100.147.145", "ATM IP": "10.100.147.146", "DVR IP": "10.100.147.150", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "L3", "Live Date": "2021-11-01"}, {"ATM No": "FSjaA171", "ATM Name": "Jatrabari s/b NCR onsite ATM", "Br. Code": "0121", "Gateway": "10.100.147.201", "ATM IP": "10.100.147.202", "DVR IP": "10.100.147.206", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Circle Network", "Live Date": "2021-03-02"}, {"ATM No": "FSkcA172", "ATM Name": "Kalachandpur S/B NCR Onsite ATM", "Br. Code": "0260", "Gateway": "10.100.147.185", "ATM IP": "10.100.147.186", "DVR IP": "10.100.147.190", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "2021-08-02"}, {"ATM No": "FSdhA173", "ATM Name": "Dhanmondi Model Branch NCR Onsite ATM", "Br. Code": "0290", "Gateway": "10.100.147.209", "ATM IP": "10.100.147.210", "DVR IP": "10.100.147.214", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Square", "Live Date": "28-02-21"}, {"ATM No": "FSskA174", "ATM Name": "Shakipur S/B NCR180 Onsite ATM", "Br. Code": "0180", "Gateway": "10.100.147.217", "ATM IP": "10.100.147.218", "DVR IP": "10.100.147.222", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "16-02-21"}, {"ATM No": "FStoA175", "ATM Name": "Tokirhat NCR Offsite ATM", "Br. Code": "0235", "Gateway": "10.100.147.177", "ATM IP": "10.100.147.178", "DVR IP": "10.100.147.182", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "Square", "Live Date": "24-02-21"}, {"ATM No": "FScuA176", "ATM Name": "Cumilla 2nd Offsite NCR ATM", "Br. Code": "0150", "Gateway": "10.100.147.233", "ATM IP": "10.100.147.234", "DVR IP": "10.100.147.238", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "Bracknet", "Live Date": "2021-03-03"}, {"ATM No": "FSpaA177", "ATM Name": "Panditsar S/B NCR 181 Onsite ATM", "Br. Code": "0181", "Gateway": "10.100.147.225", "ATM IP": "10.100.147.226", "DVR IP": "10.100.147.230", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "2021-10-03"}, {"ATM No": "FSchA178", "ATM Name": "Chapainawabganj NCR Onsite ATM", "Br. Code": "0288", "Gateway": "10.100.146.33", "ATM IP": "10.100.146.34", "DVR IP": "10.100.146.38", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "HRC", "Live Date": "15-03-21"}, {"ATM No": "FSgoA179", "ATM Name": "Gopalganj NCR Offsite ATM", "Br. Code": "0247", "Gateway": "10.100.146.9", "ATM IP": "10.100.146.10", "DVR IP": "10.100.146.14", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "24-03-21"}, {"ATM No": "FSmkA180", "ATM Name": "Muksudpur 2nd NCR Offsite ATM", "Br. Code": "0127", "Gateway": "10.100.146.17", "ATM IP": "10.100.146.18", "DVR IP": "10.100.146.22", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Square", "Live Date": "22-03-21"}, {"ATM No": "FSdkA181", "ATM Name": "Dakbangla NCR Offsite ATM", "Br. Code": "0282", "Gateway": "10.100.147.249", "ATM IP": "10.100.147.250", "DVR IP": "10.100.147.254", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "IOL", "Live Date": "24-08-21"}, {"ATM No": "FSmrA182", "ATM Name": "Morrelgonj NCR Offsite ATM", "Br. Code": "0216", "Gateway": "10.100.146.1", "ATM IP": "10.100.146.2", "DVR IP": "10.100.146.6", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "Accesstel", "Live Date": "23-08-21"}, {"ATM No": "FSsaA183", "ATM Name": "Sanarpar S/B NCR121 Onsite ATM", "Br. Code": "0121", "Gateway": "10.100.146.25", "ATM IP": "10.100.146.26", "DVR IP": "10.100.146.30", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "PCL", "Live Date": "20-06-21"}, {"ATM No": "FSkgA184", "ATM Name": "Keraniganj NCR Onsite ATM", "Br. Code": "0207", "Gateway": "10.100.146.49", "ATM IP": "10.100.146.50", "DVR IP": "10.100.146.54", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "PCL", "Live Date": "2021-03-04"}, {"ATM No": "FSlhA185", "ATM Name": "Loharpool S/B NCR 225 Onsite ATM", "Br. Code": "0225", "Gateway": "10.100.146.41", "ATM IP": "10.100.146.42", "DVR IP": "10.100.146.46", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "2021-01-06"}, {"ATM No": "FSbaA186", "ATM Name": "Badarganj NCR Onsite ATM", "Br. Code": "0286", "Gateway": "10.100.146.57", "ATM IP": "10.100.146.58", "DVR IP": "10.100.146.62", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "HRC", "Live Date": "21-06-21"}, {"ATM No": "FSudA187", "ATM Name": "Budhata S/B NCR146 Onsite ATM", "Br. Code": "0146", "Gateway": "10.100.147.241", "ATM IP": "10.100.147.242", "DVR IP": "10.100.147.246", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "20-06-21"}, {"ATM No": "FStoA188", "ATM Name": "Tongibari NCR offsite ATM", "Br. Code": "0199", "Gateway": "10.100.146.65", "ATM IP": "10.100.146.66", "DVR IP": "10.100.146.70", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "PCL", "Live Date": "26-08-21"}, {"ATM No": "FShtA189", "ATM Name": "Hathazari NCR Offsite ATM", "Br. Code": "0137", "Gateway": "10.100.146.73", "ATM IP": "10.100.146.74", "DVR IP": "10.100.146.78", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "IOL", "Live Date": "25-08-21"}, {"ATM No": "FSjrA190", "ATM Name": "Juri NCR Offsite ATM", "Br. Code": "0242", "Gateway": "10.100.146.89", "ATM IP": "10.100.146.90", "DVR IP": "10.100.146.94", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "IOL", "Live Date": "15-09-21"}, {"ATM No": "FSshA191", "ATM Name": "Shimultali S/B NCR 214 Onsite ATM", "Br. Code": "0214", "Gateway": "10.100.146.81", "ATM IP": "10.100.146.82", "DVR IP": "10.100.146.86", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BracNet", "Live Date": "2021-09-09"}, {"ATM No": "FSruA192", "ATM Name": "Rupatoli S/B NCR 163 Onsite ATM", "Br. Code": "0163", "Gateway": "10.100.146.105", "ATM IP": "10.100.146.106", "DVR IP": "10.100.146.110", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "29-09-21"}, {"ATM No": "FSjsA193", "ATM Name": "Jashore Chatiantala NCR Offsite ATM", "Br. Code": "0141", "Gateway": "10.100.146.97", "ATM IP": "10.100.146.98", "DVR IP": "10.100.146.102", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BrackNet", "Live Date": "2021-06-10"}, {"ATM No": "FSrhA196", "ATM Name": "Rahattarpul NCR Onsite ATM", "Br. Code": "0259", "Gateway": "10.100.146.129", "ATM IP": "10.100.146.130", "DVR IP": "10.100.146.134", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Getco", "Live Date": "24-10-21"}, {"ATM No": "FSamA197", "ATM Name": "Amtoli NCR onsite ATM", "Br. Code": "0293", "Gateway": "10.100.146.137", "ATM IP": "10.100.146.138", "DVR IP": "10.100.146.142", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BracNet", "Live Date": "20-10-21"}, {"ATM No": "FSrnA198", "ATM Name": "Ranabhola NCR offsite ATM", "Br. Code": "0228", "Gateway": "10.100.146.145", "ATM IP": "10.100.146.146", "DVR IP": "10.100.146.150", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "HRC", "Live Date": "2021-01-11"}, {"ATM No": "FSpdA200", "ATM Name": "Padua S/B NCR 147 Onsite ATM", "Br. Code": "0147", "Gateway": "10.100.146.161", "ATM IP": "10.100.146.162", "DVR IP": "10.100.146.166", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BBTS", "Live Date": "2021-10-11"}, {"ATM No": "FSgnA201", "ATM Name": "Gournadi NCR offsite ATM", "Br. Code": "0271", "Gateway": "10.100.146.169", "ATM IP": "10.100.146.170", "DVR IP": "10.100.146.174", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "L3", "Live Date": "2021-06-12"}, {"ATM No": "FSmbA202", "ATM Name": "Masterbari 2nd NCR Offsite ATM", "Br. Code": "0183", "Gateway": "10.100.146.177", "ATM IP": "10.100.146.178", "DVR IP": "10.100.146.182", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "IOL", "Live Date": "29-11-21"}, {"ATM No": "FStiA203", "ATM Name": "Training Institute NCR offsite ATM", "Br. Code": "0177", "Gateway": "10.100.146.185", "ATM IP": "10.100.146.186", "DVR IP": "10.100.146.190", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "Metronet", "Live Date": "2021-09-12"}, {"ATM No": "FSpmA205", "ATM Name": "Patiya Mohila NCR offsite ATM", "Br. Code": "0182", "Gateway": "10.100.146.201", "ATM IP": "10.100.146.202", "DVR IP": "10.100.146.206", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "IOL", "Live Date": "2022-12-01"}, {"ATM No": "FSkuA206", "ATM Name": "Kumira 2nd NCR Onsite ATM", "Br. Code": "0193", "Gateway": "10.100.146.209", "ATM IP": "10.100.146.210", "DVR IP": "10.100.146.214", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "IOL", "Live Date": "26-01-22"}, {"ATM No": "FSbcA207", "ATM Name": "Bonda Chatgaon SB207 NCR onsite ATM", "Br. Code": "0207", "Gateway": "10.100.146.217", "ATM IP": "10.100.146.218", "DVR IP": "10.100.146.222", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "MetroNet/Circle Network", "Live Date": "2022-09-02"}, {"ATM No": "FSbkA208", "ATM Name": "Banskhali NCR Onsite ATM", "Br. Code": "0187", "Gateway": "10.100.146.225", "ATM IP": "10.100.146.226", "DVR IP": "10.100.146.230", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BBTS", "Live Date": "23-02-22"}, {"ATM No": "FSkaA209", "ATM Name": "Kanungopara S/B 277 NCR Onsite ATM", "Br. Code": "0277", "Gateway": "10.100.146.233", "ATM IP": "10.100.146.234", "DVR IP": "10.100.146.238", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BBTS", "Live Date": "30-03-22"}, {"ATM No": "FSclA210", "ATM Name": "Colonelhat Offsite NCR ATM", "Br. Code": "0289", "Gateway": "10.100.146.241", "ATM IP": "10.100.146.242", "DVR IP": "10.100.146.246", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BBTS", "Live Date": "2022-09-05"}, {"ATM No": "FSrjA211", "ATM Name": "Rajshahi 2nd NCR offsite ATM", "Br. Code": "0136", "Gateway": "10.100.146.249", "ATM IP": "10.100.146.250", "DVR IP": "10.100.146.254", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "PCL", "Live Date": "2022-09-05"}, {"ATM No": "FSueA212", "ATM Name": "Uttara EPZ S/B 252 NCR Offsite ATM", "Br. Code": "0252", "Gateway": "10.100.148.17", "ATM IP": "10.100.148.18", "DVR IP": "10.100.148.22", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "PCL", "Live Date": "31-08-22"}, {"ATM No": "FSbkA213", "ATM Name": "Boalkhali NCR Offsite ATM", "Br. Code": "0277", "Gateway": "10.100.148.25", "ATM IP": "10.100.148.26", "DVR IP": "10.100.148.30", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "BBTS", "Live Date": "2022-07-09"}, {"ATM No": "FSpoA214", "ATM Name": "Postagola Ashgor Ali NCR Offsite ATM", "Br. Code": "0225", "Gateway": "10.100.148.33", "ATM IP": "10.100.148.34", "DVR IP": "10.100.148.38", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "IOL", "Live Date": "2022-12-09"}, {"ATM No": "FSepA215", "ATM Name": "Cumilla EPZ S/B 150 NCR Onsite ATM", "Br. Code": "0150", "Gateway": "10.100.148.41", "ATM IP": "10.100.148.42", "DVR IP": "10.100.148.46", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "PCL", "Live Date": "2022-12-09"}, {"ATM No": "FSmaA216", "ATM Name": "Madhaya Bazar NCR Offsite ATM", "Br. Code": "0254", "Gateway": "10.100.148.49", "ATM IP": "10.100.148.50", "DVR IP": "10.100.148.54", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "IOL", "Live Date": "13-09-22"}, {"ATM No": "FSbhA217", "ATM Name": "Bhola branch NCR onsite ATM", "Br. Code": "0226", "Gateway": "10.100.148.57", "ATM IP": "10.100.148.58", "DVR IP": "10.100.148.62", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "21-09-22"}, {"ATM No": "FSafA218", "ATM Name": "Aftabnagar NCR Onsite ATM", "Br. Code": "0298", "Gateway": "10.100.148.65", "ATM IP": "10.100.148.66", "DVR IP": "10.100.148.70", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "2022-10-10"}, {"ATM No": "FSthA219", "ATM Name": "Takerhat NCR Onsite ATM", "Br. Code": "0301", "Gateway": "10.100.148.73", "ATM IP": "10.100.148.74", "DVR IP": "10.100.148.78", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "2022-03-11"}, {"ATM No": "FSsaA220", "ATM Name": "Sarail NCR Onsite ATM", "Br. Code": "0302", "Gateway": "10.100.130.73", "ATM IP": "10.100.130.74", "DVR IP": "10.100.130.78", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "14-11-22"}, {"ATM No": "FSbuA221", "ATM Name": "Baunia Bazar S/B NCR 158 Onsite ATM", "Br. Code": "0158", "Gateway": "10.100.148.97", "ATM IP": "10.100.148.98", "DVR IP": "10.100.148.102", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "29-11-22"}, {"ATM No": "FSmoA222", "ATM Name": "Modina Market S/B 128 NCR Onsite ATM", "Br. Code": "0128", "Gateway": "10.100.148.89", "ATM IP": "10.100.148.90", "DVR IP": "10.100.148.94", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "28-11-22"}, {"ATM No": "FSnbA223", "ATM Name": "Nabinagar NCR Onsite ATM", "Br. Code": "0303", "Gateway": "10.100.148.105", "ATM IP": "10.100.148.106", "DVR IP": "10.100.148.110", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Bracknet", "Live Date": "2022-05-12"}, {"ATM No": "FSchA224", "ATM Name": "Chowgacha NCR Onsite ATM", "Br. Code": "0304", "Gateway": "10.100.148.113", "ATM IP": "10.100.148.114", "DVR IP": "10.100.148.118", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "2022-12-12"}, {"ATM No": "FSrmA225", "ATM Name": "Ramgonj Offsite NCR ATM", "Br. Code": "0131", "Gateway": "10.100.148.129", "ATM IP": "10.100.148.130", "DVR IP": "10.100.148.134", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "BDCOM", "Live Date": "2022-05-12"}, {"ATM No": "FSsaA226", "ATM Name": "Satkania S/B 110 NCR Offsite ATM", "Br. Code": "0110", "Gateway": "10.100.148.145", "ATM IP": "10.100.148.146", "DVR IP": "10.100.148.150", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "2023-04-01"}, {"ATM No": "FSpkA227", "ATM Name": "Pekua NCR Onsite ATM", "Br. Code": "0192", "Gateway": "10.100.148.161", "ATM IP": "10.100.148.162", "DVR IP": "10.100.148.166", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Access Tel", "Live Date": "2023-11-01"}, {"ATM No": "FSkhA228", "ATM Name": "Khulna Khan Jahan Ali NCR Offsite ATM", "Br. Code": "0116", "Gateway": "10.100.148.153", "ATM IP": "10.100.148.154", "DVR IP": "10.100.148.158", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "IOL", "Live Date": "2022-09-01"}, {"ATM No": "FSuzA229", "ATM Name": "Uzirpur NCR Onsite ATM", "Br. Code": "0209", "Gateway": "10.100.148.169", "ATM IP": "10.100.148.170", "DVR IP": "10.100.148.174", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "HRC", "Live Date": "16-01-23"}, {"ATM No": "FSksA230", "ATM Name": "Kushtia NCR Offsite THW ATM", "Br. Code": "0179", "Gateway": "10.100.148.121", "ATM IP": "10.100.148.122", "DVR IP": "10.100.148.126", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "19-12-22"}, {"ATM No": "FSbrA231", "ATM Name": "Birulia 2nd NCR Onsite ATM", "Br. Code": "0178", "Gateway": "10.100.117.41", "ATM IP": "10.100.117.43", "DVR IP": "10.100.117.47", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Getco", "Live Date": "2023-07-02"}, {"ATM No": "FSmnA232", "ATM Name": "Morium Nagar S/B 124 NCR Offsite ATM", "Br. Code": "0124", "Gateway": "10.100.148.185", "ATM IP": "10.100.148.186", "DVR IP": "10.100.148.190", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "27-02-23"}, {"ATM No": "FSshA235", "ATM Name": "Shyamnagar NCR Offsite ATM", "Br. Code": "0205", "Gateway": "10.100.148.137", "ATM IP": "10.100.148.138", "DVR IP": "10.100.148.142", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "22-05-23"}, {"ATM No": "FStaA236", "ATM Name": "Tanbazar S/B 170 NCR Onsite ATM", "Br. Code": "0170", "Gateway": "10.100.148.209", "ATM IP": "10.100.148.210", "DVR IP": "10.100.148.214", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Brack Net", "Live Date": "16-05-23"}, {"ATM No": "FSkhA237", "ATM Name": "Khilgaon NCR Onsite ATM", "Br. Code": "0274", "Gateway": "10.100.148.217", "ATM IP": "10.100.148.218", "DVR IP": "10.100.148.222", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BDCOM", "Live Date": "20-06-23"}, {"ATM No": "FSpaA238", "ATM Name": "Pacchor NCR Onsite 2nd ATM", "Br. Code": "0210", "Gateway": "10.100.117.33", "ATM IP": "10.100.117.35", "DVR IP": "10.100.117.38", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Accesstel", "Live Date": "25-06-23"}, {"ATM No": "FSsuA239", "ATM Name": "SURJANAGAR BAZAR S/B 210 NCR Onsite ATM", "Br. Code": "0210", "Gateway": "10.100.148.225", "ATM IP": "10.100.148.226", "DVR IP": "10.100.148.230", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Accesstel", "Live Date": "26-06-23"}, {"ATM No": "FSnkA240", "ATM Name": "Naikhongchari S/B 200 NCR Onsite ATM", "Br. Code": "0200", "Gateway": "10.100.148.241", "ATM IP": "10.100.148.242", "DVR IP": "10.100.148.246", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "BBTS", "Live Date": "26-07-23"}, {"ATM No": "FScwA241", "ATM Name": "Chowdhury Hat 2nd NCR Offsite ATM", "Br. Code": "0244", "Gateway": "10.100.116.65", "ATM IP": "10.100.116.66", "DVR IP": "10.100.116.70", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "BrackNet", "Live Date": "2023-12-09"}, {"ATM No": "FSsnA242", "ATM Name": "Sankipara SB 160 NCR Onsite ATM", "Br. Code": "0160", "Gateway": "10.100.116.1", "ATM IP": "10.100.116.2", "DVR IP": "10.100.116.6", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Brack Net", "Live Date": "18-09-23"}, {"ATM No": "FSkaA243", "ATM Name": "Kanaipur Bazar S/B 162 NCR Onsite ATM", "Br. Code": "0162", "Gateway": "10.100.116.201", "ATM IP": "10.100.116.202", "DVR IP": "10.100.116.206", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Brack Net", "Live Date": "18-09-23"}, {"ATM No": "FSbtA244", "ATM Name": "Betagi S/B 201 NCR Onsite ATM", "Br. Code": "0201", "Gateway": "10.100.117.1", "ATM IP": "10.100.117.2", "DVR IP": "10.100.117.6", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Brack Net", "Live Date": "2023-11-10"}, {"ATM No": "FSgoA245", "ATM Name": "Golarbazar S/B 181 NCR Onsite ATM", "Br. Code": "0181", "Gateway": "10.100.117.97", "ATM IP": "10.100.117.98", "DVR IP": "10.100.117.102", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "22-10-23"}, {"ATM No": "FSsbA247", "ATM Name": "Saheberhat SB 163 NCR Offsite ATM", "Br. Code": "0163", "Gateway": "10.100.118.113", "ATM IP": "10.100.118.114", "DVR IP": "10.100.118.118", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "Circle Network", "Live Date": "14-05-24"}, {"ATM No": "FSbkA248 ", "ATM Name": "Bakila Bazar S/B 292 NCR onsite ATM", "Br. Code": "0292", "Gateway": "10.100.118.201", "ATM IP": "10.100.118.202", "DVR IP": "10.100.118.206", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "", "Live Date": "13/11/2024"}, {"ATM No": "FScorR01", "ATM Name": "Corporate Branch NCR Onsite CRM", "Br. Code": "0281", "Gateway": "10.100.147.193", "ATM IP": "10.100.147.194", "DVR IP": "10.100.147.198", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Square", "Live Date": "28-01-21"}, {"ATM No": "FSagrR02", "ATM Name": "Feni NCR Onsite CRM", "Br. Code": "0165", "Gateway": "10.100.147.121", "ATM IP": "10.100.147.123", "DVR IP": "10.100.147.126", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Accesstel", "Live Date": "15/02/2021"}, {"ATM No": "FSdilR03", "ATM Name": "Dilkusha NCR onsite CRM", "Br. Code": "0101", "Gateway": "10.100.116.153", "ATM IP": "10.100.116.155", "DVR IP": "10.100.116.158", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "18-10-21"}, {"ATM No": "FSkmiR04 ", "ATM Name": "Kumira IIUC NCR Offsite CRM", "Br. Code": "0193", "Gateway": "10.100.146.113", "ATM IP": "10.100.146.114", "DVR IP": "10.100.146.118", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "BBTS", "Live Date": "2021-12-10"}, {"ATM No": "FSmagR05", "ATM Name": "Magura NCR offsite CRM", "Br. Code": "0173", "Gateway": "10.100.118.25", "ATM IP": "10.100.118.27", "DVR IP": "10.100.118.30", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "L3", "Live Date": "27-10-21"}, {"ATM No": "FSboA204", "ATM Name": "Banani Offsite NCR THW ATM", "Br. Code": "0115", "Gateway": "10.100.146.193", "ATM IP": "10.100.146.194", "DVR IP": "10.100.146.198", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "IOL", "Live Date": "2022-01-01"}, {"ATM No": "FSbanR06", "ATM Name": "Bandartila NCR Onsite CRM", "Br. Code": "0184", "Gateway": "10.100.148.2", "ATM IP": "10.100.148.3", "DVR IP": "10.100.148.6", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "13-06-22"}, {"ATM No": "FSrinR07 ", "ATM Name": "Ringroad NCR offsite CRM", "Br. Code": "0133", "Gateway": "10.100.148.9", "ATM IP": "10.100.148.10", "DVR IP": "10.100.148.14", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "HRC", "Live Date": "15-06-22"}, {"ATM No": "FSgulR08", "ATM Name": "Gulshan NCR onsite CRM", "Br. Code": "0112", "Gateway": "10.100.117.217", "ATM IP": "10.100.117.218", "DVR IP": "10.100.117.222", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "HRC", "Live Date": "25-09-22"}, {"ATM No": "FSutaR09", "ATM Name": "Uttara NCR Onsite CRM", "Br. Code": "0158", "Gateway": "10.100.116.161", "ATM IP": "10.100.116.163", "DVR IP": "10.100.116.166", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "Access Tel", "Live Date": "2022-07-11"}, {"ATM No": "FSbosR10", "ATM Name": "Bosila S/B 290 NCR Onsite CRM", "Br. Code": "0290", "Gateway": "10.100.148.81", "ATM IP": "10.100.148.82", "DVR IP": "10.100.148.86", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Onsite", "Link Provider": "IOL", "Live Date": "2022-08-11"}, {"ATM No": "FSfdpR15", "ATM Name": "Senanibash HIT Onsite CRM", "Br. Code": "0126", "Gateway": "10.100.118.49", "ATM IP": "10.100.118.51", "DVR IP": "10.100.118.54", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Onsite", "Link Provider": "Access Tel", "Live Date": "22-03-23"}, {"ATM No": "FSbasR12", "ATM Name": "Bashundhara HIT Offsite CRM", "Br. Code": "0177", "Gateway": "10.100.116.129", "ATM IP": "10.100.116.131", "DVR IP": "10.100.116.134", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Offsite", "Link Provider": "L3", "Live Date": "18-01-23"}, {"ATM No": "FSbonR13 ", "ATM Name": "Bonosree HIT Offsite CRM", "Br. Code": "0138", "Gateway": "10.100.130.161", "ATM IP": "10.100.130.163", "DVR IP": "10.100.130.166", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Offsite", "Link Provider": "BDCOM", "Live Date": "23-01-23"}, {"ATM No": "FSklsR14 ", "ATM Name": "Khulshi HIT Onsite CRM", "Br. Code": "0276", "Gateway": "10.100.148.193", "ATM IP": "10.100.148.195", "DVR IP": "10.100.148.198", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Onsite", "Link Provider": "HRC", "Live Date": "13-03-23"}, {"ATM No": "FScrbR16 ", "ATM Name": "Corporate Branch HIT Offsite CRM", "Br. Code": "0281", "Gateway": "10.100.148.233", "ATM IP": "10.100.148.234", "DVR IP": "10.100.148.238", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Offsite", "Link Provider": "L3", "Live Date": "2023-09-07"}, {"ATM No": "FSkdaR17 ", "ATM Name": "Khulna K.D.A HIT Onsite CRM", "Br. Code": "0116", "Gateway": "10.100.116.49", "ATM IP": "10.100.116.51", "DVR IP": "10.100.116.54", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Onsite", "Link Provider": "Access Tel", "Live Date": "24-07-23"}, {"ATM No": "FShalR18 ", "ATM Name": "Halishahar Branch HIT onsite CRM", "Br. Code": "0185", "Gateway": "10.100.148.249", "ATM IP": "10.100.148.250", "DVR IP": "10.100.148.254", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Onsite", "Link Provider": "Access Tel", "Live Date": "31-07-23"}, {"ATM No": "FShitR19 ", "ATM Name": "Rahattarpul HIT Offsite CRM", "Br. Code": "0259", "Gateway": "10.100.117.17", "ATM IP": "10.100.117.18", "DVR IP": "10.100.117.22", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Offsite", "Link Provider": "Accesstel", "Live Date": "22-10-23"}, {"ATM No": "FSrnpR20 ", "ATM Name": "Rangpur Branch HIT Offsite CRM", "Br. Code": "0109", "Gateway": "10.100.118.217", "ATM IP": "10.100.118.219", "DVR IP": "10.100.118.222", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Offsite", "Link Provider": "......", "Live Date": "31-10-23"}, {"ATM No": "FSbokR21 ", "ATM Name": "Bokhter Munshi Bazar NCR Offsite CRM", "Br. Code": "0232", "Gateway": "10.100.119.65", "ATM IP": "10.100.119.67", "DVR IP": "10.100.119.70", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "NCR", "Booth Type": "Offsite", "Link Provider": "BDCOM", "Live Date": "19-12-23"}, {"ATM No": "FSuttR22 ", "ATM Name": "Uttara Model HIT onsite CRM", "Br. Code": "0305", "Gateway": "10.100.117.249", "ATM IP": "10.100.117.250", "DVR IP": "10.100.117.254", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "2024-10-01"}, {"ATM No": "FSnarR23 ", "ATM Name": "Narail HIT offsite CRM", "Br. Code": "0204", "Gateway": "10.100.119.177", "ATM IP": "10.100.119.179", "DVR IP": "10.100.119.182", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Offsite", "Link Provider": "Accesstel", "Live Date": "29-01-24"}, {"ATM No": "FSrzbR24 ", "ATM Name": "Reazuddin Bazar S/B 107 HIT Onsite CRM", "Br. Code": "0107", "Gateway": "10.100.118.1", "ATM IP": "10.100.118.2", "DVR IP": "10.100.118.6", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Onsite", "Link Provider": "L3", "Live Date": "2024-06-03"}, {"ATM No": "FSbhaR25 ", "ATM Name": "Bhaluka HIT Offsite CRM", "Br. Code": "0168", "Gateway": "10.100.118.137", "ATM IP": "10.100.118.139", "DVR IP": "10.100.118.142", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Offsite", "Link Provider": "Square", "Live Date": "2024-11-03"}, {"ATM No": "FSshyR26", "ATM Name": "Shyamnagar HIT Onsite CRM", "Br. Code": "0205", "Gateway": "10.100.117.25", "ATM IP": "10.100.117.27", "DVR IP": "10.100.117.30", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Onsite", "Link Provider": "Bracknet", "Live Date": "13-03-24"}, {"ATM No": "FSbrgR27 ", "ATM Name": "Barguna HIT Onsite CRM", "Br. Code": "0201", "Gateway": "10.100.117.57", "ATM IP": "10.100.117.59", "DVR IP": "10.100.117.62", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Onsite", "Link Provider": "BDCOM", "Live Date": "25-03-24"}, {"ATM No": "FSbrsR28 ", "ATM Name": "Barishal HIT Offsite CRM", "Br. Code": "0163", "Gateway": "10.100.130.153", "ATM IP": "10.100.130.155", "DVR IP": "10.100.130.158", "PING STATUS (GW + ATM + DVR)": "OPEN 3-IP PING", "Machine Type": "HIT", "Booth Type": "Offsite", "Link Provider": "L3", "Live Date": "27-03-24"}, {"ATM No": "", "ATM Name": "", "Br. Code": "", "Gateway": "", "ATM IP": "", "DVR IP": "", "PING STATUS (GW + ATM + DVR)": "", "Machine Type": "", "Booth Type": "", "Link Provider": "", "Live Date": ""}, {"ATM No": "Developed by @Masrur", "ATM Name": "", "Br. Code": "", "Gateway": "", "ATM IP": "", "DVR IP": "", "PING STATUS (GW + ATM + DVR)": "", "Machine Type": "", "Booth Type": "", "Link Provider": "", "Live Date": ""}];
-const fields=["ATM No","ATM Name","Br. Code","Gateway","ATM IP","DVR IP","Machine Type","Booth Type","Link Provider","Live Date"];
-const tbody=document.getElementById('body'), search=document.getElementById('search'), count=document.getElementById('count');
-function safe(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function makeBat(r){
- const ips=[["Gateway",r["Gateway"]],["ATM",r["ATM IP"]],["DVR",r["DVR IP"]]];
- let lines=["@echo off","title 3-IP Ping - "+r["ATM No"],"echo Terminal: "+r["ATM No"]+" - "+r["ATM Name"],"echo Three separate ping windows will open.",""];
- for(const [label,ip] of ips) if(ip && ip!=="") lines.push('start "'+label+' - '+r["ATM No"]+'" cmd /k "ping -t '+ip+'"');
- lines.push("exit");
- const blob=new Blob([lines.join("\r\n")],{type:"text/plain"});
- const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="Ping_"+r["ATM No"]+".bat";a.click();URL.revokeObjectURL(a.href);
-}
-function render(){
- const q=search.value.trim().toLowerCase();
- const filtered=data.filter(r=>fields.some(f=>String(r[f]??"").toLowerCase().includes(q)));
- count.textContent=filtered.length+" of "+data.length+" terminals";
- tbody.innerHTML=filtered.map(r=>'<tr>'+fields.map(f=>'<td class="'+(["Gateway","ATM IP","DVR IP"].includes(f)?"ip":"")+'">'+safe(r[f])+'</td>').join('')+
- '<td><button type="button" data-id="'+safe(r["ATM No"])+'">Download 3-IP PING BAT</button></td></tr>').join('');
- tbody.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{const r=data.find(x=>x["ATM No"]===b.dataset.id);makeBat(r);}));
-}
-search.addEventListener("input",render);render();
-</script></body></html>
+<table border="1">
+<tr><td colspan="10">First Security Islami Bank PLC.</td></tr>
+<tr><td colspan="10">ATM INFORMATION</td></tr>
+<tr>
+<td>ATM No</td>
+<td>ATM Name</td>
+<td>Br. Code</td>
+<td>Gateway</td>
+<td>ATM IP</td>
+<td>DVR IP</td>
+<td>Machine Type</td>
+<td>Booth Type</td>
+<td>Link Provider</td>
+<td>Live Date</td>
+</tr>
+<tr>
+<td>FShobA01</td>
+<td>Head Office NCR Onsite ATM</td>
+<td>0100</td>
+<td>10.100.117.177</td>
+<td>10.100.117.178</td>
+<td>10.100.117.182</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Square</td>
+<td>08-Nov-2012</td>
+</tr>
+<tr>
+<td>FSbahA04</td>
+<td>Bahaddarhat NCR Offsite ATM</td>
+<td>0123</td>
+<td>10.100.116.25</td>
+<td>10.100.116.26</td>
+<td>10.100.116.30</td>
+<td>NCR</td>
+<td>onsite</td>
+<td>BDCOM</td>
+<td>09-Apr-2012</td>
+</tr>
+<tr>
+<td>FSandA05</td>
+<td>Anderkillah NCR Onsite ATM</td>
+<td>0134</td>
+<td>10.100.116.17</td>
+<td>10.100.116.18</td>
+<td>10.100.116.22</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>09-May-2012</td>
+</tr>
+<tr>
+<td>FSjesA06</td>
+<td>Jessore NCR Offsite ATM</td>
+<td>0141</td>
+<td>10.100.116.33</td>
+<td>10.100.116.34</td>
+<td>10.100.116.38</td>
+<td>NCR</td>
+<td>onsite</td>
+<td>HRC</td>
+<td>19-09-12</td>
+</tr>
+<tr>
+<td>FSbanA07</td>
+<td>Bandar Tila NCR Offsite ATM</td>
+<td>0184</td>
+<td>10.100.118.9</td>
+<td>10.100.118.10</td>
+<td>10.100.118.14</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>HRC</td>
+<td>10-Mar-2012</td>
+</tr>
+<tr>
+<td>FSmouA09</td>
+<td>Moulovibazar NCR Onsite ATM</td>
+<td>0122</td>
+<td>10.100.116.57</td>
+<td>10.100.116.58</td>
+<td>10.100.116.62</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Access Tel</td>
+<td>17-10-12</td>
+</tr>
+<tr>
+<td>FSmohA13</td>
+<td>Mohra NCR Onsite ATM</td>
+<td>0161</td>
+<td>10.100.116.81</td>
+<td>10.100.116.82</td>
+<td>10.100.116.86</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>11-May-2012</td>
+</tr>
+<tr>
+<td>FStalA14</td>
+<td>Taltola NCR offsite ATM</td>
+<td>0153</td>
+<td>10.100.118.17</td>
+<td>10.100.118.18</td>
+<td>10.100.118.22</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>BDCOM</td>
+<td>11-Jul-2012</td>
+</tr>
+<tr>
+<td>FSdonA17</td>
+<td>Donia NCR Onsite ATM</td>
+<td>0121</td>
+<td>10.100.116.113</td>
+<td>10.100.116.114</td>
+<td>10.100.116.118</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>14-11-12</td>
+</tr>
+<tr>
+<td>FSjsrA21</td>
+<td>Jessore (Rotary) NCR Offsite ATM</td>
+<td>0141</td>
+<td>10.100.118.57</td>
+<td>10.100.118.58</td>
+<td>10.100.118.62</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>Access Tel</td>
+<td>12-Nov-2012</td>
+</tr>
+<tr>
+<td>FSdhnA22</td>
+<td>Dhanmondi NCR Onsite ATM</td>
+<td>0108</td>
+<td>10.100.116.145</td>
+<td>10.100.116.146</td>
+<td>10.100.116.150</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BDCOM</td>
+<td>12-Nov-2012</td>
+</tr>
+<tr>
+<td>FSmadA23</td>
+<td>Madhabdi NCR Onsite ATM</td>
+<td>0154</td>
+<td>10.100.116.137</td>
+<td>10.100.116.138</td>
+<td>10.100.116.142</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>HRC</td>
+<td>12-Dec-2012</td>
+</tr>
+<tr>
+<td>FSjesA25</td>
+<td>Jessore (Pallbari) NCR Offsite ATM</td>
+<td>0141</td>
+<td>10.100.118.65</td>
+<td>10.100.118.66</td>
+<td>10.100.118.70</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>Access Tel</td>
+<td>12-Dec-2012</td>
+</tr>
+<tr>
+<td>FSazaA26</td>
+<td>Azampur NCR Offsite ATM</td>
+<td>0140</td>
+<td>10.100.118.33</td>
+<td>10.100.118.34</td>
+<td>10.100.118.38</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>Access Tel</td>
+<td>17-12-12</td>
+</tr>
+<tr>
+<td>FSnarA27</td>
+<td>Narail Lohagara NCR Offsite ATM</td>
+<td>0157</td>
+<td>10.100.118.41</td>
+<td>10.100.118.42</td>
+<td>10.100.118.46</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>SQURE</td>
+<td>19-12-12</td>
+</tr>
+<tr>
+<td>FSbasA29</td>
+<td>Bashundhara NCR Onsite ATM</td>
+<td>0177</td>
+<td>10.100.116.129</td>
+<td>10.100.116.130</td>
+<td>10.100.116.134</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>24-12-12</td>
+</tr>
+<tr>
+<td>FSuttA30</td>
+<td>Uttara NCR Onsite ATM</td>
+<td>0158</td>
+<td>10.100.116.161</td>
+<td>10.100.116.162</td>
+<td>10.100.116.166</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Access Tel</td>
+<td>26-12-12</td>
+</tr>
+<tr>
+<td>FSkumA35</td>
+<td>Kumira NCR Onsite ATM</td>
+<td>0193</td>
+<td>10.100.116.177</td>
+<td>10.100.116.178</td>
+<td>10.100.116.182</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>HRC</td>
+<td>06-Dec-2013</td>
+</tr>
+<tr>
+<td>FSbisA38</td>
+<td>Biswanath NCR Onsite ATM</td>
+<td>0105</td>
+<td>10.100.116.193</td>
+<td>10.100.116.194</td>
+<td>10.100.116.198</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>17-06-13</td>
+</tr>
+<tr>
+<td>FSsatA39</td>
+<td>Satkhira Offsite NCR ATM</td>
+<td>0146</td>
+<td>10.100.118.105</td>
+<td>10.100.118.106</td>
+<td>10.100.118.110</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>BDCOM</td>
+<td>26-06-13</td>
+</tr>
+<tr>
+<td>FScrtA41</td>
+<td>Court Bazar NCR Onsite ATM</td>
+<td>0135</td>
+<td>10.100.116.217</td>
+<td>10.100.116.218</td>
+<td>10.100.116.222</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Bracknet</td>
+<td>07-Mar-2013</td>
+</tr>
+<tr>
+<td>FSranA44</td>
+<td>Ranir Hat NCR Offsite ATM</td>
+<td>0156</td>
+<td>10.100.130.137</td>
+<td>10.100.130.138</td>
+<td>10.100.130.142</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>SQURE</td>
+<td>07-Oct-2013</td>
+</tr>
+<tr>
+<td>FSkesA46</td>
+<td>Keshabpur NCR Onsite ATM</td>
+<td>0188</td>
+<td>10.100.116.241</td>
+<td>10.100.116.242</td>
+<td>10.100.116.246</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Accesstel</td>
+<td>16-09-13</td>
+</tr>
+<tr>
+<td>FSramA49</td>
+<td>Ramgonj NCR Onsite ATM</td>
+<td>0131</td>
+<td>10.100.117.201</td>
+<td>10.100.117.202</td>
+<td>10.100.117.206</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BDCOM</td>
+<td>24-09-13</td>
+</tr>
+<tr>
+<td>FSpahA51</td>
+<td>Pahartoli Chowmohoni NCR offsite ATM</td>
+<td>0196</td>
+<td>10.100.118.145</td>
+<td>10.100.118.146</td>
+<td>10.100.118.150</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>LINK 3</td>
+<td>11-Jul-2013</td>
+</tr>
+<tr>
+<td>FSagrA52</td>
+<td>Agrabad NCR Onsite ATM</td>
+<td>0104</td>
+<td>10.100.117.73</td>
+<td>10.100.117.74</td>
+<td>10.100.117.78</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>11-Apr-2013</td>
+</tr>
+<tr>
+<td>FSsylA53</td>
+<td>Sylhet NCR Onsite ATM</td>
+<td>0111</td>
+<td>10.100.117.9</td>
+<td>10.100.117.10</td>
+<td>10.100.117.14</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BDCOM</td>
+<td>11-Nov-2013</td>
+</tr>
+<tr>
+<td>FSmymA54</td>
+<td>Mymensingh NCR Onsite ATM</td>
+<td>0160</td>
+<td>10.100.117.49</td>
+<td>10.100.117.50</td>
+<td>10.100.117.54</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>11-Dec-2013</td>
+</tr>
+<tr>
+<td>FSambA55</td>
+<td>Amborkhana NCR Offsite ATM</td>
+<td>0128</td>
+<td>10.100.118.169</td>
+<td>10.100.118.170</td>
+<td>10.100.118.174</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>LINK 3</td>
+<td>16-01-14</td>
+</tr>
+<tr>
+<td>FSbgsA57</td>
+<td>Bangshal NCR Onsite ATM</td>
+<td>0106</td>
+<td>10.100.117.65</td>
+<td>10.100.117.66</td>
+<td>10.100.117.70</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>16-01-14</td>
+</tr>
+<tr>
+<td>FSmoiA59</td>
+<td>Khulna Moilapota NCR Offsite ATM</td>
+<td>0116</td>
+<td>10.100.118.185</td>
+<td>10.100.118.186</td>
+<td>10.100.118.190</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>Access Tel</td>
+<td>30-01-14</td>
+</tr>
+<tr>
+<td>FSjheA60</td>
+<td>Jhenaidah NCR Offsite ATM</td>
+<td>0197</td>
+<td>10.100.118.193</td>
+<td>10.100.118.194</td>
+<td>10.100.118.198</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>Access Tel</td>
+<td>13-02-14</td>
+</tr>
+<tr>
+<td>FSposA74</td>
+<td>Postagola NCR Onsite ATM</td>
+<td>0225</td>
+<td>10.100.117.193</td>
+<td>10.100.117.194</td>
+<td>10.100.117.198</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>GETCO</td>
+<td>13-07-14</td>
+</tr>
+<tr>
+<td>FSsamA77</td>
+<td>Hotel Amari NCR Offsite ATM</td>
+<td>0112</td>
+<td>10.100.118.241</td>
+<td>10.100.118.242</td>
+<td>10.100.118.246</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>Access Tel</td>
+<td>31-08-14</td>
+</tr>
+<tr>
+<td>FStopA80</td>
+<td>Topkhana NCR Onsite ATM</td>
+<td>0118</td>
+<td>10.100.119.1</td>
+<td>10.100.119.2</td>
+<td>10.100.119.6</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BDCOM</td>
+<td>25-11-14</td>
+</tr>
+<tr>
+<td>FSrupA81</td>
+<td>Rupnagar NCR Offsite ATM</td>
+<td>0223</td>
+<td>10.100.119.9</td>
+<td>10.100.119.10</td>
+<td>10.100.119.14</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>L3</td>
+<td>04-Jan-2015</td>
+</tr>
+<tr>
+<td>FSmasA85</td>
+<td>Masterbari NCR Offsite ATM</td>
+<td>0183</td>
+<td>10.100.117.121</td>
+<td>10.100.117.122</td>
+<td>10.100.117.126</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>L3/GETCO</td>
+<td>04-Aug-2015</td>
+</tr>
+<tr>
+<td>FSkzpA92</td>
+<td>Kazipara NCR Offsite ATM</td>
+<td>0113</td>
+<td>10.100.119.73</td>
+<td>10.100.119.74</td>
+<td>10.100.119.78</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>SQURE</td>
+<td>05-Nov-2015</td>
+</tr>
+<tr>
+<td>FSrbgA93</td>
+<td>Botanical Garden NCR offsite ATM</td>
+<td>0223</td>
+<td>10.100.119.81</td>
+<td>10.100.119.82</td>
+<td>10.100.119.86</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>HRC</td>
+<td>13-05-15</td>
+</tr>
+<tr>
+<td>FSbogA96</td>
+<td>Bogra NCR Offsite ATM</td>
+<td>0130</td>
+<td>10.100.119.113</td>
+<td>10.100.119.114</td>
+<td>10.100.119.118</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>HRC</td>
+<td>07-Feb-2015</td>
+</tr>
+<tr>
+<td>FSknpA97</td>
+<td>Konapara NCR Offsite ATM</td>
+<td>0190</td>
+<td>10.100.119.121</td>
+<td>10.100.119.122</td>
+<td>10.100.119.126</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>Access Tel</td>
+<td>07-Dec-2015</td>
+</tr>
+<tr>
+<td>FSzrbA98</td>
+<td>Zirabo Pukurpar NCR Offsite ATM</td>
+<td>0148</td>
+<td>10.100.119.129</td>
+<td>10.100.119.130</td>
+<td>10.100.119.134</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>HRC</td>
+<td>13-07-15</td>
+</tr>
+<tr>
+<td>FSbisA100</td>
+<td>Biswaroad NCR Offsite ATM</td>
+<td>0120</td>
+<td>10.100.119.137</td>
+<td>10.100.119.138</td>
+<td>10.100.119.142</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>HRC</td>
+<td>26-08-15</td>
+</tr>
+<tr>
+<td>FSjubA101</td>
+<td>Jubilee Road NCR Onsite ATM</td>
+<td>0107</td>
+<td>10.100.117.145</td>
+<td>10.100.117.146</td>
+<td>10.100.117.150</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>BDCOM</td>
+<td>09-Jan-2015</td>
+</tr>
+<tr>
+<td>FSbrbA102</td>
+<td>Barobazar NCR Onsite ATM</td>
+<td>0211</td>
+<td>10.100.117.153</td>
+<td>10.100.117.154</td>
+<td>10.100.117.158</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3/GETCO</td>
+<td>10-Jun-2015</td>
+</tr>
+<tr>
+<td>FSdpbA103</td>
+<td>Dhupoil Bazar NCR Onsite ATM</td>
+<td>0217</td>
+<td>10.100.119.145</td>
+<td>10.100.119.146</td>
+<td>10.100.119.150</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>SQURE</td>
+<td>10-May-2015</td>
+</tr>
+<tr>
+<td>FSkapA106</td>
+<td>Kapilmuni NCR Offsite ATM</td>
+<td>0208</td>
+<td>10.100.119.169</td>
+<td>10.100.119.170</td>
+<td>10.100.119.174</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>PCL(NOC)</td>
+<td>01-Dec-2016</td>
+</tr>
+<tr>
+<td>FSklgA108</td>
+<td>Kaligonj NCR Offsite ATM</td>
+<td>0224</td>
+<td>10.100.119.185</td>
+<td>10.100.119.186</td>
+<td>10.100.119.190</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>BDCOM</td>
+<td>27-01-16</td>
+</tr>
+<tr>
+<td>FSgobA109</td>
+<td>Gobindagonj NCR Offsite ATM</td>
+<td>0132</td>
+<td>10.100.119.193</td>
+<td>10.100.119.194</td>
+<td>10.100.119.198</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>L3</td>
+<td>16-02-16</td>
+</tr>
+<tr>
+<td>FSchwA114</td>
+<td>Chowdhury Hat NCR Offsite ATM</td>
+<td>0244</td>
+<td>10.100.119.217</td>
+<td>10.100.119.218</td>
+<td>10.100.119.222</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>Access Tel</td>
+<td>30-06-16</td>
+</tr>
+<tr>
+<td>FSdkrA115</td>
+<td>Dhorkora Bazar NCR Offsite ATM</td>
+<td>0246</td>
+<td>10.100.119.233</td>
+<td>10.100.119.234</td>
+<td>10.100.119.238</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>Access Tel</td>
+<td>29-06-16</td>
+</tr>
+<tr>
+<td>FSmotA116</td>
+<td>Motijheel NCR Onsite ATM</td>
+<td>0129</td>
+<td>10.100.117.161</td>
+<td>10.100.117.162</td>
+<td>10.100.117.166</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BDCOM</td>
+<td>29-06-16</td>
+</tr>
+<tr>
+<td>FSgalA119</td>
+<td>Galachipa NCR Offsite ATM</td>
+<td>0194</td>
+<td>10.100.119.225</td>
+<td>10.100.119.226</td>
+<td>10.100.119.230</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>Access Tel</td>
+<td>08-Feb-2016</td>
+</tr>
+<tr>
+<td>FScnpA121</td>
+<td>Chandpur NCR Offsite ATM</td>
+<td>0241</td>
+<td>10.100.130.9</td>
+<td>10.100.130.10</td>
+<td>10.100.130.14</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>link 3</td>
+<td>10-Mar-2016</td>
+</tr>
+<tr>
+<td>FSmirA122</td>
+<td>Mirpur Circle-1 NCR Offsite ATM</td>
+<td>0113</td>
+<td>10.100.130.17</td>
+<td>10.100.130.18</td>
+<td>10.100.130.22</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>BDCOM</td>
+<td>17-10-16</td>
+</tr>
+<tr>
+<td>FSkirA123</td>
+<td>Khulna Sir Iqbal Road NCR offsite ATM</td>
+<td>0116</td>
+<td>10.100.130.25</td>
+<td>10.100.130.26</td>
+<td>10.100.130.30</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>BDCOM</td>
+<td>29-11-16</td>
+</tr>
+<tr>
+<td>FSankA126</td>
+<td>Anderkillah Press Club NCR Offsite ATM</td>
+<td>0134</td>
+<td>10.100.130.49</td>
+<td>10.100.130.50</td>
+<td>10.100.130.54</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>GETCO</td>
+<td>28-03-17</td>
+</tr>
+<tr>
+<td>FSsavA127</td>
+<td>Savar NCR Offsite ATM</td>
+<td>0149</td>
+<td>10.100.130.57</td>
+<td>10.100.130.58</td>
+<td>10.100.130.62</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>L3</td>
+<td>05-Sep-2017</td>
+</tr>
+<tr>
+<td>FSmohA128</td>
+<td>Mohammadpur NCR Offsite ATM</td>
+<td>0186</td>
+<td>10.100.130.65</td>
+<td>10.100.130.66</td>
+<td>10.100.130.70</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>L3</td>
+<td>18-09-17</td>
+</tr>
+<tr>
+<td>FSrbgA130</td>
+<td>Rayerbazar NCR Offsite ATM</td>
+<td>0245</td>
+<td>10.100.130.81</td>
+<td>10.100.130.82</td>
+<td>10.100.130.86</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>PCL</td>
+<td>01-Nov-2018</td>
+</tr>
+<tr>
+<td>FShomA131</td>
+<td>Homna NCR Onsite ATM</td>
+<td>0257</td>
+<td>10.100.130.89</td>
+<td>10.100.130.90</td>
+<td>10.100.130.94</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>PCL</td>
+<td>24-01-18</td>
+</tr>
+<tr>
+<td>FSsydA132</td>
+<td>Sayedpur NCR Offsite ATM</td>
+<td>0252</td>
+<td>10.100.130.97</td>
+<td>10.100.130.98</td>
+<td>10.100.130.102</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>L3</td>
+<td>02-Jul-2018</td>
+</tr>
+<tr>
+<td>FSthkA133</td>
+<td>Thakurgaon NCR Offsite ATM</td>
+<td>0261</td>
+<td>10.100.130.105</td>
+<td>10.100.130.106</td>
+<td>10.100.130.110</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>L3</td>
+<td>05-Sep-2018</td>
+</tr>
+<tr>
+<td>FScoxA134</td>
+<td>Cox&#x27;s Bazar 2nd NCR Offsite ATM</td>
+<td>0139</td>
+<td>10.100.130.113</td>
+<td>10.100.130.114</td>
+<td>10.100.130.118</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>L3</td>
+<td>14-05-18</td>
+</tr>
+<tr>
+<td>FSdokA135</td>
+<td>Dokkhin Khan NCR Offsite ATM</td>
+<td>0237</td>
+<td>10.100.130.121</td>
+<td>10.100.130.122.</td>
+<td>10.100.130.126</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>GETCO</td>
+<td>23-07-18</td>
+</tr>
+<tr>
+<td>FSchkA137</td>
+<td>Chakaria NCR onsite ATM</td>
+<td>0142</td>
+<td>10.100.130.177</td>
+<td>10.100.130.178</td>
+<td>10.100.130.182</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>18-09-18</td>
+</tr>
+<tr>
+<td>FSramA138</td>
+<td>Ramu NCR offsite ATM</td>
+<td>0200</td>
+<td>10.100.130.185</td>
+<td>10.100.130.186</td>
+<td>10.100.130.190</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>Access Tel</td>
+<td>19-09-18</td>
+</tr>
+<tr>
+<td>FSklrA139</td>
+<td>Kalaroa NCR onsite ATM</td>
+<td>0266</td>
+<td>10.100.117.225</td>
+<td>10.100.117.226</td>
+<td>10.100.117.230</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>bdcom</td>
+<td>24-10-18</td>
+</tr>
+<tr>
+<td>FSmgrA140</td>
+<td>Magura 2nd NCR Offsite ATM</td>
+<td>0173</td>
+<td>10.100.130.193</td>
+<td>10.100.130.194</td>
+<td>10.100.130.198</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>L3</td>
+<td>11-Jul-2018</td>
+</tr>
+<tr>
+<td>FSbgbA141</td>
+<td>Bangadda Bazar NCR Offsite ATM</td>
+<td>0265</td>
+<td>10.100.130.201</td>
+<td>10.100.130.202</td>
+<td>10.100.130.206</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>Circle Network</td>
+<td>12-May-2018</td>
+</tr>
+<tr>
+<td>FSsrgA142</td>
+<td>Sirajgonj 2nd NCR Offsite ATM</td>
+<td>0251</td>
+<td>10.100.130.209</td>
+<td>10.100.130.210</td>
+<td>10.100.130.214</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>L3</td>
+<td>16-01-19</td>
+</tr>
+<tr>
+<td>FSkalA143</td>
+<td>Kalia NCR Offsite ATM</td>
+<td>0269</td>
+<td>10.100.130.217</td>
+<td>10.100.130.218</td>
+<td>10.100.130.222</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>bdcom</td>
+<td>21-01-19</td>
+</tr>
+<tr>
+<td>FSkhaA144</td>
+<td>Khatungonj NCR onsite ATM</td>
+<td>0102</td>
+<td>10.100.117.233</td>
+<td>10.100.117.234</td>
+<td>10.100.117.238</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>HRC</td>
+<td>28-01-19</td>
+</tr>
+<tr>
+<td>FSnalA145</td>
+<td>Nalta NCR Offsite ATM</td>
+<td>0272</td>
+<td>10.100.130.225</td>
+<td>10.100.130.226</td>
+<td>10.100.130.230</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>l3</td>
+<td>02-Jun-2019</td>
+</tr>
+<tr>
+<td>FSkurA146</td>
+<td>Kuril NCR Offsite ATM</td>
+<td>0260</td>
+<td>10.100.130.233</td>
+<td>10.100.130.234</td>
+<td>10.100.130.238</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>bdcom</td>
+<td>02-Apr-2019</td>
+</tr>
+<tr>
+<td>FShctA147</td>
+<td>Hotel Cox Today NCR Offsite ATM</td>
+<td>0139</td>
+<td>10.100.130.241</td>
+<td>10.100.130.242</td>
+<td>10.100.130.246</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>L3</td>
+<td>18-02-19</td>
+</tr>
+<tr>
+<td>FSpekA148</td>
+<td>Pekua NCR Offsite ATM</td>
+<td>0192</td>
+<td>10.100.147.1</td>
+<td>10.100.147.2</td>
+<td>10.100.147.6</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>L3</td>
+<td>16-04-19</td>
+</tr>
+<tr>
+<td>FSpncA149</td>
+<td>Panchlaish NCR Offsite ATM</td>
+<td>0236</td>
+<td>10.100.147.9</td>
+<td>10.100.147.10</td>
+<td>10.100.147.14</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>L3</td>
+<td>22-05-19</td>
+</tr>
+<tr>
+<td>FSmymA150</td>
+<td>Mymensingh 2nd NCR Offsite ATM</td>
+<td>0160</td>
+<td>10.100.147.17</td>
+<td>10.100.147.18</td>
+<td>10.100.147.22</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>L3</td>
+<td>07-Mar-2019</td>
+</tr>
+<tr>
+<td>FSjesA151</td>
+<td>Jessore (RN Road) NCR Offsite ATM</td>
+<td>0141</td>
+<td>10.100.147.25</td>
+<td>10.100.147.26</td>
+<td>10.100.147.30</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>IOL</td>
+<td>22-07-19</td>
+</tr>
+<tr>
+<td>FSflgA152</td>
+<td>Fulgazi NCR Offsite ATM</td>
+<td>0255</td>
+<td>10.100.147.33</td>
+<td>10.100.147.34</td>
+<td>10.100.147.38</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>L3</td>
+<td>29-07-19</td>
+</tr>
+<tr>
+<td>FStrbA153</td>
+<td>Torabganj NCR Onsite ATM</td>
+<td>0267</td>
+<td>10.100.117.241</td>
+<td>10.100.117.242</td>
+<td>10.100.117.246</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>MetroNet/Circle Network</td>
+<td>25-09-19</td>
+</tr>
+<tr>
+<td>FSlskA154</td>
+<td>Laskarhat NCR Offsite ATM</td>
+<td>0233</td>
+<td>10.100.147.49</td>
+<td>10.100.147.50</td>
+<td>10.100.147.54</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>BDCOM</td>
+<td>16-10-19</td>
+</tr>
+<tr>
+<td>FSpraA155</td>
+<td>Prabartak Mor NCR Offsite ATM</td>
+<td>0119</td>
+<td>10.100.147.57</td>
+<td>10.100.147.58</td>
+<td>10.100.147.62</td>
+<td>NCR</td>
+<td>offsite</td>
+<td>getco</td>
+<td>30-10-19</td>
+</tr>
+<tr>
+<td>FSshmA156</td>
+<td>Shimakhali NCR Offsite ATM</td>
+<td>0220</td>
+<td>10.100.147.41</td>
+<td>10.100.147.42</td>
+<td>10.100.147.46</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BDCOM</td>
+<td>12-Feb-2019</td>
+</tr>
+<tr>
+<td>FSlakA157</td>
+<td>Lakshmipur NCR offsite ATM</td>
+<td>0256</td>
+<td>10.100.147.65</td>
+<td>10.100.147.66</td>
+<td>10.100.147.70</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>GETCO</td>
+<td>29-01-20</td>
+</tr>
+<tr>
+<td>FSbarA158</td>
+<td>Baratakia NCR Offsite ATM</td>
+<td>0263</td>
+<td>10.100.147.73</td>
+<td>10.100.147.74</td>
+<td>10.100.147.78</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>PCL</td>
+<td>24-02-20</td>
+</tr>
+<tr>
+<td>FSptkA159</td>
+<td>Patkelghata NCR Onsite ATM</td>
+<td>0278</td>
+<td>10.100.147.81</td>
+<td>10.100.147.82</td>
+<td>10.100.147.86</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BBTS</td>
+<td>15-03-20</td>
+</tr>
+<tr>
+<td>FSblkA160</td>
+<td>Bhaluka 2nd NCR Offsite ATM</td>
+<td>0168</td>
+<td>10.100.147.89</td>
+<td>10.100.147.90</td>
+<td>10.100.147.94</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>Accesstel</td>
+<td>03-Nov-2020</td>
+</tr>
+<tr>
+<td>FSbauA161</td>
+<td>Bauphal NCR onsite ATM</td>
+<td>0230</td>
+<td>10.100.147.97</td>
+<td>10.100.147.98</td>
+<td>10.100.147.102</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>SQUARE</td>
+<td>23-03-20</td>
+</tr>
+<tr>
+<td>FSjhA162</td>
+<td>Joypurhat NCR Offsite ATM</td>
+<td>0264</td>
+<td>10.100.147.105</td>
+<td>10.100.147.106</td>
+<td>10.100.147.110</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>L3</td>
+<td>09-Sep-2020</td>
+</tr>
+<tr>
+<td>FSnaA165</td>
+<td>Narail Lohagara 2nd NCR Offsite ATM</td>
+<td>0157</td>
+<td>10.100.147.129</td>
+<td>10.100.147.130</td>
+<td>10.100.147.134</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>BBTS</td>
+<td>12-Sep-2020</td>
+</tr>
+<tr>
+<td>FSmaA166</td>
+<td>Maniknagar s/b NCR onsite ATM</td>
+<td>0129</td>
+<td>10.100.147.169</td>
+<td>10.100.147.170</td>
+<td>10.100.147.174</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>MetroNet/Circle Network</td>
+<td>27-12-20</td>
+</tr>
+<tr>
+<td>FSprA167</td>
+<td>Prabartak Mor 2nd NCR Offsite ATM</td>
+<td>0119</td>
+<td>10.100.147.161</td>
+<td>10.100.147.162</td>
+<td>10.100.147.166</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>BBTS</td>
+<td>28-12-20</td>
+</tr>
+<tr>
+<td>FSdoA168</td>
+<td>Dokkhin Banosree SB138 NCR Onsite ATM</td>
+<td>0138</td>
+<td>10.100.147.137</td>
+<td>10.100.147.138</td>
+<td>10.100.147.142</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>28-12-20</td>
+</tr>
+<tr>
+<td>FSnbA169</td>
+<td>Naohata Bazar SB NCR Onsite ATM</td>
+<td>0136</td>
+<td>10.100.147.153</td>
+<td>10.100.147.154</td>
+<td>10.100.147.158</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Bracknet</td>
+<td>13-01-21</td>
+</tr>
+<tr>
+<td>FSlnA170</td>
+<td>Langalbandh Bazar NCR Offsite ATM</td>
+<td>0268</td>
+<td>10.100.147.145</td>
+<td>10.100.147.146</td>
+<td>10.100.147.150</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>L3</td>
+<td>01-Nov-2021</td>
+</tr>
+<tr>
+<td>FSjaA171</td>
+<td>Jatrabari s/b NCR onsite ATM</td>
+<td>0121</td>
+<td>10.100.147.201</td>
+<td>10.100.147.202</td>
+<td>10.100.147.206</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Circle Network</td>
+<td>02-Mar-2021</td>
+</tr>
+<tr>
+<td>FSkcA172</td>
+<td>Kalachandpur S/B NCR Onsite ATM</td>
+<td>0260</td>
+<td>10.100.147.185</td>
+<td>10.100.147.186</td>
+<td>10.100.147.190</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>02-Aug-2021</td>
+</tr>
+<tr>
+<td>FSdhA173</td>
+<td>Dhanmondi Model Branch NCR Onsite ATM</td>
+<td>0290</td>
+<td>10.100.147.209</td>
+<td>10.100.147.210</td>
+<td>10.100.147.214</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Square</td>
+<td>28-02-21</td>
+</tr>
+<tr>
+<td>FSskA174</td>
+<td>Shakipur S/B NCR180 Onsite ATM</td>
+<td>0180</td>
+<td>10.100.147.217</td>
+<td>10.100.147.218</td>
+<td>10.100.147.222</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>16-02-21</td>
+</tr>
+<tr>
+<td>FStoA175</td>
+<td>Tokirhat NCR Offsite ATM</td>
+<td>0235</td>
+<td>10.100.147.177</td>
+<td>10.100.147.178</td>
+<td>10.100.147.182</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>Square</td>
+<td>24-02-21</td>
+</tr>
+<tr>
+<td>FScuA176</td>
+<td>Cumilla 2nd Offsite NCR ATM</td>
+<td>0150</td>
+<td>10.100.147.233</td>
+<td>10.100.147.234</td>
+<td>10.100.147.238</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>Bracknet</td>
+<td>03-Mar-2021</td>
+</tr>
+<tr>
+<td>FSpaA177</td>
+<td>Panditsar S/B NCR 181 Onsite ATM</td>
+<td>0181</td>
+<td>10.100.147.225</td>
+<td>10.100.147.226</td>
+<td>10.100.147.230</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>03-Oct-2021</td>
+</tr>
+<tr>
+<td>FSchA178</td>
+<td>Chapainawabganj NCR Onsite ATM</td>
+<td>0288</td>
+<td>10.100.146.33</td>
+<td>10.100.146.34</td>
+<td>10.100.146.38</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>HRC</td>
+<td>15-03-21</td>
+</tr>
+<tr>
+<td>FSgoA179</td>
+<td>Gopalganj NCR Offsite ATM</td>
+<td>0247</td>
+<td>10.100.146.9</td>
+<td>10.100.146.10</td>
+<td>10.100.146.14</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>24-03-21</td>
+</tr>
+<tr>
+<td>FSmkA180</td>
+<td>Muksudpur 2nd NCR Offsite ATM</td>
+<td>0127</td>
+<td>10.100.146.17</td>
+<td>10.100.146.18</td>
+<td>10.100.146.22</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Square</td>
+<td>22-03-21</td>
+</tr>
+<tr>
+<td>FSdkA181</td>
+<td>Dakbangla NCR Offsite ATM</td>
+<td>0282</td>
+<td>10.100.147.249</td>
+<td>10.100.147.250</td>
+<td>10.100.147.254</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>IOL</td>
+<td>24-08-21</td>
+</tr>
+<tr>
+<td>FSmrA182</td>
+<td>Morrelgonj NCR Offsite ATM</td>
+<td>0216</td>
+<td>10.100.146.1</td>
+<td>10.100.146.2</td>
+<td>10.100.146.6</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>Accesstel</td>
+<td>23-08-21</td>
+</tr>
+<tr>
+<td>FSsaA183</td>
+<td>Sanarpar S/B NCR121 Onsite ATM</td>
+<td>0121</td>
+<td>10.100.146.25</td>
+<td>10.100.146.26</td>
+<td>10.100.146.30</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>PCL</td>
+<td>20-06-21</td>
+</tr>
+<tr>
+<td>FSkgA184</td>
+<td>Keraniganj NCR Onsite ATM</td>
+<td>0207</td>
+<td>10.100.146.49</td>
+<td>10.100.146.50</td>
+<td>10.100.146.54</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>PCL</td>
+<td>04-Mar-2021</td>
+</tr>
+<tr>
+<td>FSlhA185</td>
+<td>Loharpool S/B NCR 225 Onsite ATM</td>
+<td>0225</td>
+<td>10.100.146.41</td>
+<td>10.100.146.42</td>
+<td>10.100.146.46</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>06-Jan-2021</td>
+</tr>
+<tr>
+<td>FSbaA186</td>
+<td>Badarganj NCR Onsite ATM</td>
+<td>0286</td>
+<td>10.100.146.57</td>
+<td>10.100.146.58</td>
+<td>10.100.146.62</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>HRC</td>
+<td>21-06-21</td>
+</tr>
+<tr>
+<td>FSudA187</td>
+<td>Budhata S/B NCR146 Onsite ATM</td>
+<td>0146</td>
+<td>10.100.147.241</td>
+<td>10.100.147.242</td>
+<td>10.100.147.246</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>20-06-21</td>
+</tr>
+<tr>
+<td>FStoA188</td>
+<td>Tongibari NCR offsite ATM</td>
+<td>0199</td>
+<td>10.100.146.65</td>
+<td>10.100.146.66</td>
+<td>10.100.146.70</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>PCL</td>
+<td>26-08-21</td>
+</tr>
+<tr>
+<td>FShtA189</td>
+<td>Hathazari NCR Offsite ATM</td>
+<td>0137</td>
+<td>10.100.146.73</td>
+<td>10.100.146.74</td>
+<td>10.100.146.78</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>IOL</td>
+<td>25-08-21</td>
+</tr>
+<tr>
+<td>FSjrA190</td>
+<td>Juri NCR Offsite ATM</td>
+<td>0242</td>
+<td>10.100.146.89</td>
+<td>10.100.146.90</td>
+<td>10.100.146.94</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>IOL</td>
+<td>15-09-21</td>
+</tr>
+<tr>
+<td>FSshA191</td>
+<td>Shimultali S/B NCR 214 Onsite ATM</td>
+<td>0214</td>
+<td>10.100.146.81</td>
+<td>10.100.146.82</td>
+<td>10.100.146.86</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BracNet</td>
+<td>09-Sep-2021</td>
+</tr>
+<tr>
+<td>FSruA192</td>
+<td>Rupatoli S/B NCR 163 Onsite ATM</td>
+<td>0163</td>
+<td>10.100.146.105</td>
+<td>10.100.146.106</td>
+<td>10.100.146.110</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>29-09-21</td>
+</tr>
+<tr>
+<td>FSjsA193</td>
+<td>Jashore Chatiantala NCR Offsite ATM</td>
+<td>0141</td>
+<td>10.100.146.97</td>
+<td>10.100.146.98</td>
+<td>10.100.146.102</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BrackNet</td>
+<td>10-Jun-2021</td>
+</tr>
+<tr>
+<td>FSrhA196</td>
+<td>Rahattarpul NCR Onsite ATM</td>
+<td>0259</td>
+<td>10.100.146.129</td>
+<td>10.100.146.130</td>
+<td>10.100.146.134</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Getco</td>
+<td>24-10-21</td>
+</tr>
+<tr>
+<td>FSamA197</td>
+<td>Amtoli NCR onsite ATM</td>
+<td>0293</td>
+<td>10.100.146.137</td>
+<td>10.100.146.138</td>
+<td>10.100.146.142</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BracNet</td>
+<td>20-10-21</td>
+</tr>
+<tr>
+<td>FSrnA198</td>
+<td>Ranabhola NCR offsite ATM</td>
+<td>0228</td>
+<td>10.100.146.145</td>
+<td>10.100.146.146</td>
+<td>10.100.146.150</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>HRC</td>
+<td>11-Jan-2021</td>
+</tr>
+<tr>
+<td>FSpdA200</td>
+<td>Padua S/B NCR 147 Onsite ATM</td>
+<td>0147</td>
+<td>10.100.146.161</td>
+<td>10.100.146.162</td>
+<td>10.100.146.166</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BBTS</td>
+<td>11-Oct-2021</td>
+</tr>
+<tr>
+<td>FSgnA201</td>
+<td>Gournadi NCR offsite ATM</td>
+<td>0271</td>
+<td>10.100.146.169</td>
+<td>10.100.146.170</td>
+<td>10.100.146.174</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>L3</td>
+<td>12-Jun-2021</td>
+</tr>
+<tr>
+<td>FSmbA202</td>
+<td>Masterbari 2nd NCR Offsite ATM</td>
+<td>0183</td>
+<td>10.100.146.177</td>
+<td>10.100.146.178</td>
+<td>10.100.146.182</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>IOL</td>
+<td>29-11-21</td>
+</tr>
+<tr>
+<td>FStiA203</td>
+<td>Training Institute NCR offsite ATM</td>
+<td>0177</td>
+<td>10.100.146.185</td>
+<td>10.100.146.186</td>
+<td>10.100.146.190</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>Metronet</td>
+<td>12-Sep-2021</td>
+</tr>
+<tr>
+<td>FSpmA205</td>
+<td>Patiya Mohila NCR offsite ATM</td>
+<td>0182</td>
+<td>10.100.146.201</td>
+<td>10.100.146.202</td>
+<td>10.100.146.206</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>IOL</td>
+<td>01-Dec-2022</td>
+</tr>
+<tr>
+<td>FSkuA206</td>
+<td>Kumira 2nd NCR Onsite ATM</td>
+<td>0193</td>
+<td>10.100.146.209</td>
+<td>10.100.146.210</td>
+<td>10.100.146.214</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>IOL</td>
+<td>26-01-22</td>
+</tr>
+<tr>
+<td>FSbcA207</td>
+<td>Bonda Chatgaon SB207 NCR onsite ATM</td>
+<td>0207</td>
+<td>10.100.146.217</td>
+<td>10.100.146.218</td>
+<td>10.100.146.222</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>MetroNet/Circle Network</td>
+<td>02-Sep-2022</td>
+</tr>
+<tr>
+<td>FSbkA208</td>
+<td>Banskhali NCR Onsite ATM</td>
+<td>0187</td>
+<td>10.100.146.225</td>
+<td>10.100.146.226</td>
+<td>10.100.146.230</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BBTS</td>
+<td>23-02-22</td>
+</tr>
+<tr>
+<td>FSkaA209</td>
+<td>Kanungopara S/B 277 NCR Onsite ATM</td>
+<td>0277</td>
+<td>10.100.146.233</td>
+<td>10.100.146.234</td>
+<td>10.100.146.238</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BBTS</td>
+<td>30-03-22</td>
+</tr>
+<tr>
+<td>FSclA210</td>
+<td>Colonelhat Offsite NCR ATM</td>
+<td>0289</td>
+<td>10.100.146.241</td>
+<td>10.100.146.242</td>
+<td>10.100.146.246</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BBTS</td>
+<td>05-Sep-2022</td>
+</tr>
+<tr>
+<td>FSrjA211</td>
+<td>Rajshahi 2nd NCR offsite ATM</td>
+<td>0136</td>
+<td>10.100.146.249</td>
+<td>10.100.146.250</td>
+<td>10.100.146.254</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>PCL</td>
+<td>05-Sep-2022</td>
+</tr>
+<tr>
+<td>FSueA212</td>
+<td>Uttara EPZ S/B 252 NCR Offsite ATM</td>
+<td>0252</td>
+<td>10.100.148.17</td>
+<td>10.100.148.18</td>
+<td>10.100.148.22</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>PCL</td>
+<td>31-08-22</td>
+</tr>
+<tr>
+<td>FSbkA213</td>
+<td>Boalkhali NCR Offsite ATM</td>
+<td>0277</td>
+<td>10.100.148.25</td>
+<td>10.100.148.26</td>
+<td>10.100.148.30</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>BBTS</td>
+<td>09-Jul-2022</td>
+</tr>
+<tr>
+<td>FSpoA214</td>
+<td>Postagola Ashgor Ali NCR Offsite ATM</td>
+<td>0225</td>
+<td>10.100.148.33</td>
+<td>10.100.148.34</td>
+<td>10.100.148.38</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>IOL</td>
+<td>09-Dec-2022</td>
+</tr>
+<tr>
+<td>FSepA215</td>
+<td>Cumilla EPZ S/B 150 NCR Onsite ATM</td>
+<td>0150</td>
+<td>10.100.148.41</td>
+<td>10.100.148.42</td>
+<td>10.100.148.46</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>PCL</td>
+<td>09-Dec-2022</td>
+</tr>
+<tr>
+<td>FSmaA216</td>
+<td>Madhaya Bazar NCR Offsite ATM</td>
+<td>0254</td>
+<td>10.100.148.49</td>
+<td>10.100.148.50</td>
+<td>10.100.148.54</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>IOL</td>
+<td>13-09-22</td>
+</tr>
+<tr>
+<td>FSbhA217</td>
+<td>Bhola branch NCR onsite ATM</td>
+<td>0226</td>
+<td>10.100.148.57</td>
+<td>10.100.148.58</td>
+<td>10.100.148.62</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>21-09-22</td>
+</tr>
+<tr>
+<td>FSafA218</td>
+<td>Aftabnagar NCR Onsite ATM</td>
+<td>0298</td>
+<td>10.100.148.65</td>
+<td>10.100.148.66</td>
+<td>10.100.148.70</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>10-Oct-2022</td>
+</tr>
+<tr>
+<td>FSthA219</td>
+<td>Takerhat NCR Onsite ATM</td>
+<td>0301</td>
+<td>10.100.148.73</td>
+<td>10.100.148.74</td>
+<td>10.100.148.78</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>11-Mar-2022</td>
+</tr>
+<tr>
+<td>FSsaA220</td>
+<td>Sarail NCR Onsite ATM</td>
+<td>0302</td>
+<td>10.100.130.73</td>
+<td>10.100.130.74</td>
+<td>10.100.130.78</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>14-11-22</td>
+</tr>
+<tr>
+<td>FSbuA221</td>
+<td>Baunia Bazar S/B NCR 158 Onsite ATM</td>
+<td>0158</td>
+<td>10.100.148.97</td>
+<td>10.100.148.98</td>
+<td>10.100.148.102</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>29-11-22</td>
+</tr>
+<tr>
+<td>FSmoA222</td>
+<td>Modina Market S/B 128 NCR Onsite ATM</td>
+<td>0128</td>
+<td>10.100.148.89</td>
+<td>10.100.148.90</td>
+<td>10.100.148.94</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>28-11-22</td>
+</tr>
+<tr>
+<td>FSnbA223</td>
+<td>Nabinagar NCR Onsite ATM</td>
+<td>0303</td>
+<td>10.100.148.105</td>
+<td>10.100.148.106</td>
+<td>10.100.148.110</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Bracknet</td>
+<td>12-May-2022</td>
+</tr>
+<tr>
+<td>FSchA224</td>
+<td>Chowgacha NCR Onsite ATM</td>
+<td>0304</td>
+<td>10.100.148.113</td>
+<td>10.100.148.114</td>
+<td>10.100.148.118</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>12-Dec-2022</td>
+</tr>
+<tr>
+<td>FSrmA225</td>
+<td>Ramgonj Offsite NCR ATM</td>
+<td>0131</td>
+<td>10.100.148.129</td>
+<td>10.100.148.130</td>
+<td>10.100.148.134</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>BDCOM</td>
+<td>12-May-2022</td>
+</tr>
+<tr>
+<td>FSsaA226</td>
+<td>Satkania S/B 110 NCR Offsite ATM</td>
+<td>0110</td>
+<td>10.100.148.145</td>
+<td>10.100.148.146</td>
+<td>10.100.148.150</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>01-Apr-2023</td>
+</tr>
+<tr>
+<td>FSpkA227</td>
+<td>Pekua NCR Onsite ATM</td>
+<td>0192</td>
+<td>10.100.148.161</td>
+<td>10.100.148.162</td>
+<td>10.100.148.166</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Access Tel</td>
+<td>01-Nov-2023</td>
+</tr>
+<tr>
+<td>FSkhA228</td>
+<td>Khulna Khan Jahan Ali NCR Offsite ATM</td>
+<td>0116</td>
+<td>10.100.148.153</td>
+<td>10.100.148.154</td>
+<td>10.100.148.158</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>IOL</td>
+<td>01-Sep-2022</td>
+</tr>
+<tr>
+<td>FSuzA229</td>
+<td>Uzirpur NCR Onsite ATM</td>
+<td>0209</td>
+<td>10.100.148.169</td>
+<td>10.100.148.170</td>
+<td>10.100.148.174</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>HRC</td>
+<td>16-01-23</td>
+</tr>
+<tr>
+<td>FSksA230</td>
+<td>Kushtia NCR Offsite THW ATM</td>
+<td>0179</td>
+<td>10.100.148.121</td>
+<td>10.100.148.122</td>
+<td>10.100.148.126</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>19-12-22</td>
+</tr>
+<tr>
+<td>FSbrA231</td>
+<td>Birulia 2nd NCR Onsite ATM</td>
+<td>0178</td>
+<td>10.100.117.41</td>
+<td>10.100.117.43</td>
+<td>10.100.117.47</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Getco</td>
+<td>02-Jul-2023</td>
+</tr>
+<tr>
+<td>FSmnA232</td>
+<td>Morium Nagar S/B 124 NCR Offsite ATM</td>
+<td>0124</td>
+<td>10.100.148.185</td>
+<td>10.100.148.186</td>
+<td>10.100.148.190</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>27-02-23</td>
+</tr>
+<tr>
+<td>FSshA235</td>
+<td>Shyamnagar NCR Offsite ATM</td>
+<td>0205</td>
+<td>10.100.148.137</td>
+<td>10.100.148.138</td>
+<td>10.100.148.142</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>22-05-23</td>
+</tr>
+<tr>
+<td>FStaA236</td>
+<td>Tanbazar S/B 170 NCR Onsite ATM</td>
+<td>0170</td>
+<td>10.100.148.209</td>
+<td>10.100.148.210</td>
+<td>10.100.148.214</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Brack Net</td>
+<td>16-05-23</td>
+</tr>
+<tr>
+<td>FSkhA237</td>
+<td>Khilgaon NCR Onsite ATM</td>
+<td>0274</td>
+<td>10.100.148.217</td>
+<td>10.100.148.218</td>
+<td>10.100.148.222</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BDCOM</td>
+<td>20-06-23</td>
+</tr>
+<tr>
+<td>FSpaA238</td>
+<td>Pacchor NCR Onsite 2nd ATM</td>
+<td>0210</td>
+<td>10.100.117.33</td>
+<td>10.100.117.35</td>
+<td>10.100.117.38</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Accesstel</td>
+<td>25-06-23</td>
+</tr>
+<tr>
+<td>FSsuA239</td>
+<td>SURJANAGAR BAZAR S/B 210 NCR Onsite ATM</td>
+<td>0210</td>
+<td>10.100.148.225</td>
+<td>10.100.148.226</td>
+<td>10.100.148.230</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Accesstel</td>
+<td>26-06-23</td>
+</tr>
+<tr>
+<td>FSnkA240</td>
+<td>Naikhongchari S/B 200 NCR Onsite ATM</td>
+<td>0200</td>
+<td>10.100.148.241</td>
+<td>10.100.148.242</td>
+<td>10.100.148.246</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>BBTS</td>
+<td>26-07-23</td>
+</tr>
+<tr>
+<td>FScwA241</td>
+<td>Chowdhury Hat 2nd NCR Offsite ATM</td>
+<td>0244</td>
+<td>10.100.116.65</td>
+<td>10.100.116.66</td>
+<td>10.100.116.70</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>BrackNet</td>
+<td>09-Dec-2023</td>
+</tr>
+<tr>
+<td>FSsnA242</td>
+<td>Sankipara SB 160 NCR Onsite ATM</td>
+<td>0160</td>
+<td>10.100.116.1</td>
+<td>10.100.116.2</td>
+<td>10.100.116.6</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Brack Net</td>
+<td>18-09-23</td>
+</tr>
+<tr>
+<td>FSkaA243</td>
+<td>Kanaipur Bazar S/B 162 NCR Onsite ATM</td>
+<td>0162</td>
+<td>10.100.116.201</td>
+<td>10.100.116.202</td>
+<td>10.100.116.206</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Brack Net</td>
+<td>18-09-23</td>
+</tr>
+<tr>
+<td>FSbtA244</td>
+<td>Betagi S/B 201 NCR Onsite ATM</td>
+<td>0201</td>
+<td>10.100.117.1</td>
+<td>10.100.117.2</td>
+<td>10.100.117.6</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Brack Net</td>
+<td>10-Nov-2023</td>
+</tr>
+<tr>
+<td>FSgoA245</td>
+<td>Golarbazar S/B 181 NCR Onsite ATM</td>
+<td>0181</td>
+<td>10.100.117.97</td>
+<td>10.100.117.98</td>
+<td>10.100.117.102</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>22-10-23</td>
+</tr>
+<tr>
+<td>FSsbA247</td>
+<td>Saheberhat SB 163 NCR Offsite ATM</td>
+<td>0163</td>
+<td>10.100.118.113</td>
+<td>10.100.118.114</td>
+<td>10.100.118.118</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>Circle Network</td>
+<td>14-05-24</td>
+</tr>
+<tr>
+<td>FSbkA248 </td>
+<td>Bakila Bazar S/B 292 NCR onsite ATM</td>
+<td>0292</td>
+<td>10.100.118.201</td>
+<td>10.100.118.202</td>
+<td>10.100.118.206</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td></td>
+<td>13/11/2024</td>
+</tr>
+<tr>
+<td>FScorR01</td>
+<td>Corporate Branch NCR Onsite CRM</td>
+<td>0281</td>
+<td>10.100.147.193</td>
+<td>10.100.147.194</td>
+<td>10.100.147.198</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Square</td>
+<td>28-01-21</td>
+</tr>
+<tr>
+<td>FSagrR02</td>
+<td>Feni NCR Onsite CRM</td>
+<td>0165</td>
+<td>10.100.147.121</td>
+<td>10.100.147.123</td>
+<td>10.100.147.126</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Accesstel</td>
+<td>15/02/2021</td>
+</tr>
+<tr>
+<td>FSdilR03</td>
+<td>Dilkusha NCR onsite CRM</td>
+<td>0101</td>
+<td>10.100.116.153</td>
+<td>10.100.116.155</td>
+<td>10.100.116.158</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>18-10-21</td>
+</tr>
+<tr>
+<td>FSkmiR04 </td>
+<td>Kumira IIUC NCR Offsite CRM</td>
+<td>0193</td>
+<td>10.100.146.113</td>
+<td>10.100.146.114</td>
+<td>10.100.146.118</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>BBTS</td>
+<td>10-Dec-2021</td>
+</tr>
+<tr>
+<td>FSmagR05</td>
+<td>Magura NCR offsite CRM</td>
+<td>0173</td>
+<td>10.100.118.25</td>
+<td>10.100.118.27</td>
+<td>10.100.118.30</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>L3</td>
+<td>27-10-21</td>
+</tr>
+<tr>
+<td>FSboA204</td>
+<td>Banani Offsite NCR THW ATM</td>
+<td>0115</td>
+<td>10.100.146.193</td>
+<td>10.100.146.194</td>
+<td>10.100.146.198</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>IOL</td>
+<td>01-Jan-2022</td>
+</tr>
+<tr>
+<td>FSbanR06</td>
+<td>Bandartila NCR Onsite CRM</td>
+<td>0184</td>
+<td>10.100.148.2</td>
+<td>10.100.148.3</td>
+<td>10.100.148.6</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>13-06-22</td>
+</tr>
+<tr>
+<td>FSrinR07 </td>
+<td>Ringroad NCR offsite CRM</td>
+<td>0133</td>
+<td>10.100.148.9</td>
+<td>10.100.148.10</td>
+<td>10.100.148.14</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>HRC</td>
+<td>15-06-22</td>
+</tr>
+<tr>
+<td>FSgulR08</td>
+<td>Gulshan NCR onsite CRM</td>
+<td>0112</td>
+<td>10.100.117.217</td>
+<td>10.100.117.218</td>
+<td>10.100.117.222</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>HRC</td>
+<td>25-09-22</td>
+</tr>
+<tr>
+<td>FSutaR09</td>
+<td>Uttara NCR Onsite CRM</td>
+<td>0158</td>
+<td>10.100.116.161</td>
+<td>10.100.116.163</td>
+<td>10.100.116.166</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>Access Tel</td>
+<td>11-Jul-2022</td>
+</tr>
+<tr>
+<td>FSbosR10</td>
+<td>Bosila S/B 290 NCR Onsite CRM</td>
+<td>0290</td>
+<td>10.100.148.81</td>
+<td>10.100.148.82</td>
+<td>10.100.148.86</td>
+<td>NCR</td>
+<td>Onsite</td>
+<td>IOL</td>
+<td>11-Aug-2022</td>
+</tr>
+<tr>
+<td>FSfdpR15</td>
+<td>Senanibash HIT Onsite CRM</td>
+<td>0126</td>
+<td>10.100.118.49</td>
+<td>10.100.118.51</td>
+<td>10.100.118.54</td>
+<td>HIT</td>
+<td>Onsite</td>
+<td>Access Tel</td>
+<td>22-03-23</td>
+</tr>
+<tr>
+<td>FSbasR12</td>
+<td>Bashundhara HIT Offsite CRM</td>
+<td>0177</td>
+<td>10.100.116.129</td>
+<td>10.100.116.131</td>
+<td>10.100.116.134</td>
+<td>HIT</td>
+<td>Offsite</td>
+<td>L3</td>
+<td>18-01-23</td>
+</tr>
+<tr>
+<td>FSbonR13 </td>
+<td>Bonosree HIT Offsite CRM</td>
+<td>0138</td>
+<td>10.100.130.161</td>
+<td>10.100.130.163</td>
+<td>10.100.130.166</td>
+<td>HIT</td>
+<td>Offsite</td>
+<td>BDCOM</td>
+<td>23-01-23</td>
+</tr>
+<tr>
+<td>FSklsR14 </td>
+<td>Khulshi HIT Onsite CRM</td>
+<td>0276</td>
+<td>10.100.148.193</td>
+<td>10.100.148.195</td>
+<td>10.100.148.198</td>
+<td>HIT</td>
+<td>Onsite</td>
+<td>HRC</td>
+<td>13-03-23</td>
+</tr>
+<tr>
+<td>FScrbR16 </td>
+<td>Corporate Branch HIT Offsite CRM</td>
+<td>0281</td>
+<td>10.100.148.233</td>
+<td>10.100.148.234</td>
+<td>10.100.148.238</td>
+<td>HIT</td>
+<td>Offsite</td>
+<td>L3</td>
+<td>07-Sep-2023</td>
+</tr>
+<tr>
+<td>FSkdaR17 </td>
+<td>Khulna K.D.A HIT Onsite CRM</td>
+<td>0116</td>
+<td>10.100.116.49</td>
+<td>10.100.116.51</td>
+<td>10.100.116.54</td>
+<td>HIT</td>
+<td>Onsite</td>
+<td>Access Tel</td>
+<td>24-07-23</td>
+</tr>
+<tr>
+<td>FShalR18 </td>
+<td>Halishahar Branch HIT onsite CRM</td>
+<td>0185</td>
+<td>10.100.148.249</td>
+<td>10.100.148.250</td>
+<td>10.100.148.254</td>
+<td>HIT</td>
+<td>Onsite</td>
+<td>Access Tel</td>
+<td>31-07-23</td>
+</tr>
+<tr>
+<td>FShitR19 </td>
+<td>Rahattarpul HIT Offsite CRM</td>
+<td>0259</td>
+<td>10.100.117.17</td>
+<td>10.100.117.18</td>
+<td>10.100.117.22</td>
+<td>HIT</td>
+<td>Offsite</td>
+<td>Accesstel</td>
+<td>22-10-23</td>
+</tr>
+<tr>
+<td>FSrnpR20 </td>
+<td>Rangpur Branch HIT Offsite CRM</td>
+<td>0109</td>
+<td>10.100.118.217</td>
+<td>10.100.118.219</td>
+<td>10.100.118.222</td>
+<td>HIT</td>
+<td>Offsite</td>
+<td>......</td>
+<td>31-10-23</td>
+</tr>
+<tr>
+<td>FSbokR21 </td>
+<td>Bokhter Munshi Bazar NCR Offsite CRM</td>
+<td>0232</td>
+<td>10.100.119.65</td>
+<td>10.100.119.67</td>
+<td>10.100.119.70</td>
+<td>NCR</td>
+<td>Offsite</td>
+<td>BDCOM</td>
+<td>19-12-23</td>
+</tr>
+<tr>
+<td>FSuttR22 </td>
+<td>Uttara Model HIT onsite CRM</td>
+<td>0305</td>
+<td>10.100.117.249</td>
+<td>10.100.117.250</td>
+<td>10.100.117.254</td>
+<td>HIT</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>01-Oct-2024</td>
+</tr>
+<tr>
+<td>FSnarR23 </td>
+<td>Narail HIT offsite CRM</td>
+<td>0204</td>
+<td>10.100.119.177</td>
+<td>10.100.119.179</td>
+<td>10.100.119.182</td>
+<td>HIT</td>
+<td>Offsite</td>
+<td>Accesstel</td>
+<td>29-01-24</td>
+</tr>
+<tr>
+<td>FSrzbR24 </td>
+<td>Reazuddin Bazar S/B 107 HIT Onsite CRM</td>
+<td>0107</td>
+<td>10.100.118.1</td>
+<td>10.100.118.2</td>
+<td>10.100.118.6</td>
+<td>HIT</td>
+<td>Onsite</td>
+<td>L3</td>
+<td>03-Jun-2024</td>
+</tr>
+<tr>
+<td>FSbhaR25 </td>
+<td>Bhaluka HIT Offsite CRM</td>
+<td>0168</td>
+<td>10.100.118.137</td>
+<td>10.100.118.139</td>
+<td>10.100.118.142</td>
+<td>HIT</td>
+<td>Offsite</td>
+<td>Square</td>
+<td>03-Nov-2024</td>
+</tr>
+<tr>
+<td>FSshyR26</td>
+<td>Shyamnagar HIT Onsite CRM</td>
+<td>0205</td>
+<td>10.100.117.25</td>
+<td>10.100.117.27</td>
+<td>10.100.117.30</td>
+<td>HIT</td>
+<td>Onsite</td>
+<td>Bracknet</td>
+<td>13-03-24</td>
+</tr>
+<tr>
+<td>FSbrgR27 </td>
+<td>Barguna HIT Onsite CRM</td>
+<td>0201</td>
+<td>10.100.117.57</td>
+<td>10.100.117.59</td>
+<td>10.100.117.62</td>
+<td>HIT</td>
+<td>Onsite</td>
+<td>BDCOM</td>
+<td>25-03-24</td>
+</tr>
+<tr>
+<td>FSbrsR28 </td>
+<td>Barishal HIT Offsite CRM</td>
+<td>0163</td>
+<td>10.100.130.153</td>
+<td>10.100.130.155</td>
+<td>10.100.130.158</td>
+<td>HIT</td>
+<td>Offsite</td>
+<td>L3</td>
+<td>27-03-24</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Developed by @Masrur</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</body>
+</html>
